@@ -1,0 +1,1770 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Прогноз дисциплины</title>
+
+    <!-- Подключить библиотеку Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    <!-- Скачать библиотеку tom-select для поиска -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+    <!-- Скачать библиотеку Chart js для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Скачать библиотеку axios для более удобных запросов-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Описание стилей для адаптивных (в зависимости от разных размеров экранов) границ -->
+    <style>
+        .toast-container-placement {
+            /* Центрирование тостов на маленьких экранах */
+            top: 10px;
+            right: 10px;
+            left: 10px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .toast-placement {
+            /* Увеличение ширины тоста до максимума на маленьких экранах */
+            width: auto;
+            max-width: 97%;
+            margin-right: 20px;
+
+        }
+
+        @media (min-width: 768px) {
+
+            .toast-container-placement-md {
+                /* Центрирование тостов справа сверху на больших экранах */
+                width: 350px;
+                max-width: 350px;
+                top: 0.5%;
+                left: auto;
+                right: 1%;
+            }
+
+            .toast-placement-md {
+                /* Маленький размер тостов на больших экранах */
+                width: 350px;
+                max-width: 350px;
+            }
+
+            .border-start-md {
+                border-inline-start: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-end-md {
+                border-inline-end: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-top-md {
+                border-top: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-bottom-md {
+                border-bottom: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-start-md-0 {
+                border-inline-start: 0px solid var(--bs-border-color) !important;
+            }
+
+            .border-end-md-0 {
+                border-inline-end: 0px solid var(--bs-border-color) !important;
+            }
+
+            .border-top-md-0 {
+                border-top: 0px solid var(--bs-border-color) !important;
+            }
+
+            .border-bottom-md-0 {
+                border-bottom: 0px solid var(--bs-border-color) !important;
+            }
+
+        }
+
+        @media (min-width: 992px) {
+            .border-start-lg {
+                border-inline-start: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-end-lg {
+                border-inline-end: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-top-lg {
+                border-top: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-bottom-lg {
+                border-bottom: 1px solid var(--bs-border-color) !important;
+            }
+
+            .border-start-lg-0 {
+                border-inline-start: 0px solid var(--bs-border-color) !important;
+            }
+
+            .border-end-lg-0 {
+                border-inline-end: 0px solid var(--bs-border-color) !important;
+            }
+
+            .border-top-lg-0 {
+                border-top: 0px solid var(--bs-border-color) !important;
+            }
+
+            .border-bottom-lg-0 {
+                border-bottom: 0px solid var(--bs-border-color) !important;
+            }
+        }
+
+        /*Сделать стиль отключенных томселектов идентичным стилю отключенных бутстраповских селектов*/
+        .ts-wrapper.single.disabled .ts-control{
+            background-color: var(--bs-secondary-bg);  /*цвет поля*/
+            opacity: 1; /*убрать прозрачность*/
+            color: var(--bs-body-color);  /*цвет текста*/
+        }
+    </style>
+</head>
+
+
+<body class="bg-body-secondary">
+
+    <nav class="navbar navbar-expand-xl bg-body shadow-sm">
+        <div class="container-fluid ps-4 pe-4">
+
+            <a class="navbar-brand text-primary fw-semibold fs-3 text-wrap">
+                Система прогноза результатов по плаванию
+            </a>
+
+            <!-- Кнопка для раскрытия меню с кнопками при маленьких размерах экрана -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Блок с кнопками. Сворачивается при маленьких размерах экрана -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+
+                <div class="d-flex flex-column flex-xl-row gap-2 mt-3 mt-xl-0">
+                    <a class="btn btn-outline-primary" href="/">Главная</a>
+                    <a class="btn btn-outline-primary" href="swim">Предсказать заплыв</a>
+                    <a class="btn btn-primary active">Предсказать соревнование</a>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+
+
+    <div class="card bg-body rounded-4 shadow-sm mt-2 ms-1 me-1">
+        <div class="card-header">
+            Введите сведения о дисциплине
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-6 col-xl-3">
+                    <label for="selectStyle" class="form-label">Стиль плавания:</label>
+                    <select class="form-select" id="selectStyle" onchange="onSelectedForField(this)">
+                        <option selected value="" disabled hidden>Выберите стиль</option>
+                        <option value="Freestyle">Вольный стиль</option>
+                        <option value="Breaststroke">Брасс</option>
+                        <option value="Backstroke">На спине</option>
+                        <option value="Butterfly">Баттерфляй</option>
+                        <option value="Medley">Комплексный</option>
+                    </select>
+                    <div class="invalid-feedback" id="styleInvalidFeedback">Выберите стиль плавания!</div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <label for="selectDistance" class="form-label">Дистанция:</label>
+                    <select class="form-select" id="selectDistance" onchange="onSelectedForField(this)">
+                        <option selected value="" disabled hidden>Выберите дистанцию</option>
+                        <option value=50>50м</option>
+                        <option value=100>100м</option>
+                        <option value=200>200м</option>
+                        <option value=400>400м</option>
+                        <option value=800>800м</option>
+                        <option value=1500>1500м</option>
+                    </select>
+                    <div class="invalid-feedback" id="distanceInvalidFeedback">Выберите дистанцию!</div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <label for="selectSex" class="form-label">Пол:</label>
+                    <select class="form-select" id="selectSex" onchange="onSelectedForField(this)">
+                        <option selected value="" disabled hidden>Выберите пол</option>
+                        <option value="M">Мужской</option>
+                        <option value="F">Женский</option>
+                    </select>
+                    <div class="invalid-feedback" id="sexInvalidFeedback">Выберите пол!</div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <label for="selectPoolLength" class="form-label">Длина бассейна:</label>
+                    <select class="form-select" id="selectPoolLength" onchange="onSelectedForField(this)">
+                        <option selected value="" disabled hidden>Выберите длину бассейна</option>
+                        <option value=25>25м</option>
+                        <option value=50>50м</option>
+                    </select>
+                    <div class="invalid-feedback" id="poolLengthInvalidFeedback">Выберите длину бассейна!</div>
+                </div>
+                <div class="col-12 col-md-12 col-xl-12">
+                    <label for="selectHostCountry" class="form-label">Страна проведения:</label>
+
+                    <select id="selectHostCountry" class="form-select" onchange="onSelectedForField(this)">
+                        <option value="" disabled hidden selected>Выберите страну</option>
+                    </select>
+                    <div class="invalid-feedback" id="hostCountryInvalidFeedback">Выберите страну заплыва!</div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-6 d-flex align-items-center gap-2">
+                    <label for="checkHasSemifinals" class="form-check-label">Есть ли в дисциплине полуфинал:</label>
+                    <input id="checkHasSemifinals" class="form-check-input" type="checkbox">
+                </div>
+                <div class="col-12 col-md-6 col-xl-6 d-flex align-items-center gap-2">
+                    <label for="checkHasHeats" class="form-check-label">Есть ли в дисциплине отборочные:</label>
+                    <input id="checkHasHeats" class="form-check-input" type="checkbox">
+                </div>
+                <div class="col-12 col-md-12 col-xl-12">
+                    <button class="btn btn-primary w-100" id="buttonApplyDisciplineData"
+                        onclick="applyDisciplineData()">Применить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="graphsModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="graphsModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label d-none" id="canvasHeightDependencyLabel">График зависимости времени от
+                        роста пловца
+                        отсутствует, так как рост пловца неизвестен!</label>
+                    <canvas class="d-none" id="canvasHeightDependency"></canvas>
+                    <label class="form-label d-none" id="canvasAgeDependencyLabel">График зависимости времени от
+                        возраста пловца
+                        отсутствует, так как возраст пловца неизвестен!</label>
+                    <canvas class="d-none" id="canvasAgeDependency"></canvas>
+                    <canvas id="canvasLaneDependency"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!--Тосты для ошибок подключения к бэкенду-->
+    <div class="toast-container position-fixed toast-container-placement toast-container-placement-md"
+        style="z-index: 1046; --bs-toast-spacing: 0.2rem">
+    </div>
+</body>
+
+<script>
+    MIN_SWIMS_NUMBER_IN_FINALS = 1
+    MAX_SWIMS_NUMBER_IN_FINALS = 30
+    MIN_SWIMS_NUMBER_IN_HEATS = 2
+    MAX_SWIMS_NUMBER_IN_HEATS = 30
+    MIN_ALLOWED_SWIM_DATETIME = new Date(Date.UTC(2026, 0, 1, 0, 0, 0, 0));
+    MAX_ALLOWED_SWIM_DATETIME = new Date(Date.UTC(2049, 11, 31, 23, 59, 59, 0));
+    MIN_TIMEDELTA_BETWEEN_PHASES = 15 * 60 * 1000;
+    MIN_TIMEDELTA_BETWEEN_PHASES_STR = "15 минут";
+
+
+    //Показать ошибку в виде всплывающего сообщения
+    function showErrorToast(message) {
+        const container = document.querySelector('.toast-container');
+        const toastEl = document.createElement('div');
+        toastEl.className = 'toast';
+        toastEl.setAttribute('role', 'alert');
+        toastEl.classList.add('mb-1');
+        toastEl.classList.add('toast-placement');
+        toastEl.classList.add('toast-placement-md');
+        toastEl.innerHTML = `
+    <div class="toast-header ">
+        <span>❌</span>
+        <strong class="ms-2 me-auto">Ошибка</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">${message}</div>
+  `;
+        container.appendChild(toastEl);
+        const toast = new bootstrap.Toast(toastEl, { autohide: false }); //Не закрывать сообщение автоматически
+        toast.show();
+        //Автоудаление после скрытия
+        toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+    }
+
+    //Сведения о дисциплине, введенные пользователем
+    const disciplineInputData = {
+        sex: null,
+        distance: null,
+        style: null,
+        poolLength: null,
+        hostCountryCode: null,
+        hostRegion: null,
+        finalsPhaseSwims: [],
+        semifinalsPhaseSwims: null,
+        heatsPhaseSwims: null
+    }
+
+    //Текущие прогнозы
+    let predictions = null;
+
+    //Список стран - хозяек
+    const hostCountries = [{ "name": "Австралия", "code": "AUS", "region": "Oceania" },
+    { "name": "Австрия", "code": "AUT", "region": "Europe" },
+    { "name": "Азербайджан", "code": "AZE", "region": "Europe" },
+    { "name": "Албания", "code": "ALB", "region": "Europe" },
+    { "name": "Алжир", "code": "ALG", "region": "Africa" },
+    { "name": "Американские Виргинские Острова", "code": "ISV", "region": "Americas" },
+    { "name": "Американское Самоа", "code": "ASA", "region": "Oceania" },
+    { "name": "Ангилья", "code": "AGU", "region": "Americas" },
+    { "name": "Ангола", "code": "ANG", "region": "Africa" },
+    { "name": "Андорра", "code": "AND", "region": "Europe" },
+    { "name": "Антигуа и Барбуда", "code": "ANT", "region": "Americas" },
+    { "name": "Аргентина", "code": "ARG", "region": "Americas" },
+    { "name": "Армения", "code": "ARM", "region": "Europe" },
+    { "name": "Аруба", "code": "ARU", "region": "Americas" },
+    { "name": "Афганистан", "code": "AFG", "region": "Asia" },
+    { "name": "Багамские Острова", "code": "BAH", "region": "Americas" },
+    { "name": "Бангладеш", "code": "BAN", "region": "Asia" },
+    { "name": "Барбадос", "code": "BAR", "region": "Americas" },
+    { "name": "Бахрейн", "code": "BRN", "region": "Asia" },
+    { "name": "Беларусь", "code": "BLR", "region": "Europe" },
+    { "name": "Белиз", "code": "BIZ", "region": "Americas" },
+    { "name": "Бельгия", "code": "BEL", "region": "Europe" },
+    { "name": "Бенин", "code": "BEN", "region": "Africa" },
+    { "name": "Бермудские Острова", "code": "BER", "region": "Americas" },
+    { "name": "Болгария", "code": "BUL", "region": "Europe" },
+    { "name": "Боливия", "code": "BOL", "region": "Americas" },
+    { "name": "Босния и Герцеговина", "code": "BIH", "region": "Europe" },
+    { "name": "Ботсвана", "code": "BOT", "region": "Africa" },
+    { "name": "Бразилия", "code": "BRA", "region": "Americas" },
+    { "name": "Британские Виргинские Острова", "code": "IVB", "region": "Americas" },
+    { "name": "Бруней", "code": "BRU", "region": "Asia" },
+    { "name": "Буркина Фасо", "code": "BUR", "region": "Africa" },
+    { "name": "Бурунди", "code": "BDI", "region": "Africa" },
+    { "name": "Бутан", "code": "BHU", "region": "Asia" },
+    { "name": "Вануату", "code": "VAN", "region": "Oceania" },
+    { "name": "Великобритания", "code": "GBR", "region": "Europe" },
+    { "name": "Венгрия", "code": "HUN", "region": "Europe" },
+    { "name": "Венесуэла", "code": "VEN", "region": "Americas" },
+    { "name": "Восточный Тимор", "code": "TLS", "region": "Asia" },
+    { "name": "Вьетнам", "code": "VIE", "region": "Asia" },
+    { "name": "Габон", "code": "GAB", "region": "Africa" },
+    { "name": "Гаити", "code": "HAI", "region": "Americas" },
+    { "name": "Гайана", "code": "GUY", "region": "Americas" },
+    { "name": "Гамбия", "code": "GAM", "region": "Africa" },
+    { "name": "Гана", "code": "GHA", "region": "Africa" },
+    { "name": "Гватемала", "code": "GUA", "region": "Americas" },
+    { "name": "Гвинея", "code": "GUI", "region": "Africa" },
+    { "name": "Гвинея-Бисау", "code": "GBS", "region": "Africa" },
+    { "name": "Германия", "code": "GER", "region": "Europe" },
+    { "name": "Гибралтар", "code": "GIB", "region": "Europe" },
+    { "name": "Гондурас", "code": "HON", "region": "Americas" },
+    { "name": "Гонконг", "code": "HKG", "region": "Asia" },
+    { "name": "Гренада", "code": "GRN", "region": "Americas" },
+    { "name": "Греция", "code": "GRE", "region": "Europe" },
+    { "name": "Грузия", "code": "GEO", "region": "Europe" },
+    { "name": "Гуам", "code": "GUM", "region": "Oceania" },
+    { "name": "Дания", "code": "DEN", "region": "Europe" },
+    { "name": "Демократическая Республика Конго", "code": "COD", "region": "Africa" },
+    { "name": "Джибути", "code": "DJI", "region": "Africa" },
+    { "name": "Доминика", "code": "DMA", "region": "Americas" },
+    { "name": "Доминикана", "code": "DOM", "region": "Americas" },
+    { "name": "Египет", "code": "EGY", "region": "Africa" },
+    { "name": "Замбия", "code": "ZAM", "region": "Africa" },
+    { "name": "Зимбабве", "code": "ZIM", "region": "Africa" },
+    { "name": "Израиль", "code": "ISR", "region": "Europe" },
+    { "name": "Индия", "code": "IND", "region": "Asia" },
+    { "name": "Индонезия", "code": "INA", "region": "Asia" },
+    { "name": "Иордания", "code": "JOR", "region": "Asia" },
+    { "name": "Ирак", "code": "IRQ", "region": "Asia" },
+    { "name": "Иран", "code": "IRI", "region": "Asia" },
+    { "name": "Ирландия", "code": "IRL", "region": "Europe" },
+    { "name": "Исландия", "code": "ISL", "region": "Europe" },
+    { "name": "Испания", "code": "ESP", "region": "Europe" },
+    { "name": "Италия", "code": "ITA", "region": "Europe" },
+    { "name": "Йемен", "code": "YEM", "region": "Asia" },
+    { "name": "Кабо-Верде", "code": "CPV", "region": "Africa" },
+    { "name": "Казахстан", "code": "KAZ", "region": "Asia" },
+    { "name": "Каймановы Острова", "code": "CAY", "region": "Americas" },
+    { "name": "Камбоджа", "code": "CAM", "region": "Asia" },
+    { "name": "Камерун", "code": "CMR", "region": "Africa" },
+    { "name": "Канада", "code": "CAN", "region": "Americas" },
+    { "name": "Катар", "code": "QAT", "region": "Asia" },
+    { "name": "Кения", "code": "KEN", "region": "Africa" },
+    { "name": "Кипр", "code": "CYP", "region": "Europe" },
+    { "name": "Киргизия", "code": "KGZ", "region": "Asia" },
+    { "name": "Кирибати", "code": "KIR", "region": "Oceania" },
+    { "name": "Китай", "code": "CHN", "region": "Asia" },
+    { "name": "Колумбия", "code": "COL", "region": "Americas" },
+    { "name": "Коморские Острова", "code": "COM", "region": "Africa" },
+    { "name": "Корейская Народная Демократическая Республика", "code": "PRK", "region": "Asia" },
+    { "name": "Косово", "code": "KOS", "region": "Europe" },
+    { "name": "Коста-Рика", "code": "CRC", "region": "Americas" },
+    { "name": "Кот-д'Ивуар", "code": "CIV", "region": "Africa" },
+    { "name": "Куба", "code": "CUB", "region": "Americas" },
+    { "name": "Кувейт", "code": "KUW", "region": "Asia" },
+    { "name": "Кюрасао", "code": "CUR", "region": "Americas" },
+    { "name": "Лаос", "code": "LAO", "region": "Asia" },
+    { "name": "Латвия", "code": "LAT", "region": "Europe" },
+    { "name": "Лесото", "code": "LES", "region": "Africa" },
+    { "name": "Либерия", "code": "LBR", "region": "Africa" },
+    { "name": "Ливан", "code": "LBN", "region": "Asia" },
+    { "name": "Ливия", "code": "LBA", "region": "Africa" },
+    { "name": "Литва", "code": "LTU", "region": "Europe" },
+    { "name": "Лихтенштейн", "code": "LIE", "region": "Europe" },
+    { "name": "Люксембург", "code": "LUX", "region": "Europe" },
+    { "name": "Маврикий", "code": "MRI", "region": "Africa" },
+    { "name": "Мавритания", "code": "MTN", "region": "Africa" },
+    { "name": "Мадагаскар", "code": "MAD", "region": "Africa" },
+    { "name": "Макао", "code": "MAC", "region": "Asia" },
+    { "name": "Малави", "code": "MAW", "region": "Africa" },
+    { "name": "Малайзия", "code": "MAS", "region": "Asia" },
+    { "name": "Мали", "code": "MLI", "region": "Africa" },
+    { "name": "Мальдивы", "code": "MDV", "region": "Asia" },
+    { "name": "Мальта", "code": "MLT", "region": "Europe" },
+    { "name": "Марокко", "code": "MAR", "region": "Africa" },
+    { "name": "Маршалловы Острова", "code": "MHL", "region": "Oceania" },
+    { "name": "Мексика", "code": "MEX", "region": "Americas" },
+    { "name": "Мозамбик", "code": "MOZ", "region": "Africa" },
+    { "name": "Молдова", "code": "MDA", "region": "Europe" },
+    { "name": "Монако", "code": "MON", "region": "Europe" },
+    { "name": "Монголия", "code": "MGL", "region": "Asia" },
+    { "name": "Мьянма", "code": "MYA", "region": "Asia" },
+    { "name": "Намибия", "code": "NAM", "region": "Africa" },
+    { "name": "Науру", "code": "NRU", "region": "Oceania" },
+    { "name": "Непал", "code": "NEP", "region": "Asia" },
+    { "name": "Нигер", "code": "NIG", "region": "Africa" },
+    { "name": "Нигерия", "code": "NGR", "region": "Africa" },
+    { "name": "Нидерланды", "code": "NED", "region": "Europe" },
+    { "name": "Никарагуа", "code": "NCA", "region": "Americas" },
+    { "name": "Новая Зеландия", "code": "NZL", "region": "Oceania" },
+    { "name": "Норвегия", "code": "NOR", "region": "Europe" },
+    { "name": "Объединённые Арабские Эмираты", "code": "UAE", "region": "Asia" },
+    { "name": "Оман", "code": "OMA", "region": "Asia" },
+    { "name": "Остров Святой Елены", "code": "SHN", "region": "Africa" },
+    { "name": "Острова Кука", "code": "COK", "region": "Oceania" },
+    { "name": "Острова Теркс и Кайкос", "code": "TCN", "region": "Americas" },
+    { "name": "Пакистан", "code": "PAK", "region": "Asia" },
+    { "name": "Палау", "code": "PLW", "region": "Oceania" },
+    { "name": "Палестина", "code": "PLE", "region": "Asia" },
+    { "name": "Панама", "code": "PAN", "region": "Americas" },
+    { "name": "Папуа - Новая Гвинея", "code": "PNG", "region": "Oceania" },
+    { "name": "Парагвай", "code": "PAR", "region": "Americas" },
+    { "name": "Перу", "code": "PER", "region": "Americas" },
+    { "name": "Польша", "code": "POL", "region": "Europe" },
+    { "name": "Португалия", "code": "POR", "region": "Europe" },
+    { "name": "Пуэрто-Рико", "code": "PUR", "region": "Americas" },
+    { "name": "Республика Конго", "code": "CGO", "region": "Africa" },
+    { "name": "Республика Корея", "code": "KOR", "region": "Asia" },
+    { "name": "Россия", "code": "RUS", "region": "Europe" },
+    { "name": "Руанда", "code": "RWA", "region": "Africa" },
+    { "name": "Румыния", "code": "ROU", "region": "Europe" },
+    { "name": "Сальвадор", "code": "ESA", "region": "Americas" },
+    { "name": "Самоа", "code": "SAM", "region": "Oceania" },
+    { "name": "Сан-Марино", "code": "SMR", "region": "Europe" },
+    { "name": "Сан-Томе и Принсипи", "code": "STP", "region": "Africa" },
+    { "name": "Саудовская Аравия", "code": "KSA", "region": "Asia" },
+    { "name": "Северная Македония", "code": "MKD", "region": "Europe" },
+    { "name": "Северные Марианские Острова", "code": "NMA", "region": "Oceania" },
+    { "name": "Сейшельские острова", "code": "SEY", "region": "Africa" },
+    { "name": "Сенегал", "code": "SEN", "region": "Africa" },
+    { "name": "Сент-Винсент и Гренадины", "code": "VIN", "region": "Americas" },
+    { "name": "Сент-Китс и Невис", "code": "SKN", "region": "Americas" },
+    { "name": "Сент-Люсия", "code": "LCA", "region": "Americas" },
+    { "name": "Сербия", "code": "SRB", "region": "Europe" },
+    { "name": "Сингапур", "code": "SGP", "region": "Asia" },
+    { "name": "Синт-Мартен", "code": "MAA", "region": "Americas" },
+    { "name": "Сирия", "code": "SYR", "region": "Asia" },
+    { "name": "Словакия", "code": "SVK", "region": "Europe" },
+    { "name": "Словения", "code": "SLO", "region": "Europe" },
+    { "name": "Соединённые Штаты Америки", "code": "USA", "region": "Americas" },
+    { "name": "Соломоновы Острова", "code": "SOL", "region": "Oceania" },
+    { "name": "Сомали", "code": "SOM", "region": "Africa" },
+    { "name": "Судан", "code": "SUD", "region": "Africa" },
+    { "name": "Суринам", "code": "SUR", "region": "Americas" },
+    { "name": "Сьерра-Леоне", "code": "SLE", "region": "Africa" },
+    { "name": "Таджикистан", "code": "TJK", "region": "Asia" },
+    { "name": "Таиланд", "code": "THA", "region": "Asia" },
+    { "name": "Таити", "code": "TAH", "region": "Oceania" },
+    { "name": "Тайвань", "code": "TPE", "region": "Asia" },
+    { "name": "Танзания", "code": "TAN", "region": "Africa" },
+    { "name": "Того", "code": "TOG", "region": "Africa" },
+    { "name": "Тонга", "code": "TGA", "region": "Oceania" },
+    { "name": "Тринидад и Тобаго", "code": "TTO", "region": "Americas" },
+    { "name": "Тувалу", "code": "TUV", "region": "Oceania" },
+    { "name": "Тунис", "code": "TUN", "region": "Africa" },
+    { "name": "Туркменистан", "code": "TKM", "region": "Asia" },
+    { "name": "Турция", "code": "TUR", "region": "Europe" },
+    { "name": "Уганда", "code": "UGA", "region": "Africa" },
+    { "name": "Узбекистан", "code": "UZB", "region": "Asia" },
+    { "name": "Украина", "code": "UKR", "region": "Europe" },
+    { "name": "Уругвай", "code": "URU", "region": "Americas" },
+    { "name": "Фарерские острова", "code": "FRO", "region": "Europe" },
+    { "name": "Федеративные Штаты Микронезии", "code": "FSM", "region": "Oceania" },
+    { "name": "Фиджи", "code": "FIJ", "region": "Oceania" },
+    { "name": "Филиппины", "code": "PHI", "region": "Asia" },
+    { "name": "Финляндия", "code": "FIN", "region": "Europe" },
+    { "name": "Франция", "code": "FRA", "region": "Europe" },
+    { "name": "Хорватия", "code": "CRO", "region": "Europe" },
+    { "name": "Центральноафриканская Республика", "code": "CAF", "region": "Africa" },
+    { "name": "Чад", "code": "CHA", "region": "Africa" },
+    { "name": "Черногория", "code": "MNE", "region": "Europe" },
+    { "name": "Чехия", "code": "CZE", "region": "Europe" },
+    { "name": "Чили", "code": "CHI", "region": "Americas" },
+    { "name": "Швейцария", "code": "SUI", "region": "Europe" },
+    { "name": "Швеция", "code": "SWE", "region": "Europe" },
+    { "name": "Шри-Ланка", "code": "SRI", "region": "Asia" },
+    { "name": "Эквадор", "code": "ECU", "region": "Americas" },
+    { "name": "Экваториальная Гвинея", "code": "GEQ", "region": "Africa" },
+    { "name": "Эритрея", "code": "ERI", "region": "Africa" },
+    { "name": "Эсватини", "code": "SWZ", "region": "Africa" },
+    { "name": "Эстония", "code": "EST", "region": "Europe" },
+    { "name": "Эфиопия", "code": "ETH", "region": "Africa" },
+    { "name": "Южно-Африканская Республика", "code": "RSA", "region": "Africa" },
+    { "name": "Южный Судан", "code": "SSD", "region": "Africa" },
+    { "name": "Ямайка", "code": "JAM", "region": "Americas" },
+    { "name": "Япония", "code": "JPN", "region": "Asia" }]
+
+    // Добавить страны в список
+    select = document.getElementById('selectHostCountry')
+    hostCountries.forEach(country => {
+        select.add(new Option(country.name, country.code));
+    });
+
+    //Инициализировать tom-select для стран
+    new TomSelect('#selectHostCountry', {
+        placeholder: 'Выберите страну',
+        maxOptions: false
+    });
+
+    maleSwimmersDict = {}
+    femaleSwimmersDict = {}
+    //Функция для получения пловцов. Если имеются пропущенные значения, то она должна возвращать их как null
+    async function getSwimmers() {
+        try {
+            const maleResponce = await axios.get(`/swimmersDict/M`);
+            maleSwimmersDict = maleResponce.data;
+        } catch (error) {
+            showErrorToast(`Ошибка при получении пловцов: ${error}`);
+        }
+        try {
+            const femaleResponce = await axios.get(`/swimmersDict/F`);
+            femaleSwimmersDict = femaleResponce.data;
+        } catch (error) {
+            showErrorToast(`Ошибка при получении пловцов: ${error}`);
+        }
+        allswimmersDict = { ...femaleSwimmersDict, ...maleSwimmersDict };
+    }
+    swimmersDict = {}
+
+
+    getSwimmers()
+
+    //Убрать красную обводку при выборе корректного значения
+    function onSelectedForField(field) {
+        field.disabled = true;
+        if (!field.value || field.value === "") {
+            field.disabled = false;
+            return
+        }
+
+        const previousValue = field.dataset.previousValue ?? null; //предыдущее значение
+        field.dataset.previousValue = field.value;                 //сохраняем текущее как предыдущее
+
+        //Убираем красную обводку для обертки томселект
+        if (field && field.tomselect && field.tomselect.wrapper) {
+            field.tomselect.wrapper.classList.remove('is-invalid');
+        }
+
+        if (field.id == "selectSex" && previousValue !== field.value) {
+
+            if (field.value == "M") {
+                swimmersDict = maleSwimmersDict
+            }
+            else {
+                swimmersDict = femaleSwimmersDict
+            }
+        }
+
+        field.classList.remove('is-invalid')
+        field.disabled = false;
+    }
+
+    //При выборе даты и время для заплыва
+    function onSelectedForDateTimeFieldForSwimInput(inputDateTime, phase, swimInd) {
+        dt_str = inputDateTime.value;
+        if (phase == "Heats") {
+            disciplineInputData.heatsPhaseSwims[swimInd].swim_datetime_local_iso = dt_str
+        }
+        else if (phase == "Semifinals") {
+            disciplineInputData.semifinalsPhaseSwims[swimInd].swim_datetime_local_iso = dt_str
+        }
+        else if (phase == "Finals") {
+            disciplineInputData.finalsPhaseSwims[swimInd].swim_datetime_local_iso = dt_str
+        }
+
+        //Убрать сообщение об ошибке
+        document.getElementById("swimInputInvalidFeedback").classList.add('d-none')
+    }
+
+    //При выборе пловца для дорожки заплыва
+    function onSelectedForSwimmerFieldForSwimInput(inputSwimmerSelect, phase, swimInd, laneNumb) {
+        function updateSwimmersInArray(arr, laneNumb, swimmerId) {
+            const indexOfSwimmerCurrentlyInArray = arr.findIndex(x => x.lane === laneNumb);
+            if (indexOfSwimmerCurrentlyInArray !== -1) {
+                if (!swimmerId) {
+                    arr.splice(indexOfSwimmerCurrentlyInArray, 1);
+                }
+                else {
+                    arr[indexOfSwimmerCurrentlyInArray].id = swimmerId;
+                }
+                //Убрать сообщение об ошибке
+                document.getElementById("swimInputInvalidFeedback").classList.add('d-none')
+            }
+            else if (swimmerId) {
+                const indexBeforeWhichToInsert = arr.findIndex(x => x.lane > laneNumb);
+                if (indexBeforeWhichToInsert === -1) {
+                    arr.push({ "lane": laneNumb, "id": swimmerId });
+                } else {
+                    arr.splice(indexBeforeWhichToInsert, 0, { "lane": laneNumb, "id": swimmerId });
+                }
+                //Убрать сообщение об ошибке
+                document.getElementById("swimInputInvalidFeedback").classList.add('d-none')
+            }
+        }
+        const swimmer_id = inputSwimmerSelect.value;
+        let arr = [];
+        if (phase == "Heats") {
+            if (!disciplineInputData.heatsPhaseSwims[swimInd].swimmersArray) {
+                disciplineInputData.heatsPhaseSwims[swimInd].swimmersArray = [];
+            }
+            arr = disciplineInputData.heatsPhaseSwims[swimInd].swimmersArray;
+        }
+        else if (phase == "Semifinals") {
+            if (!disciplineInputData.semifinalsPhaseSwims[swimInd].swimmersArray) {
+                disciplineInputData.semifinalsPhaseSwims[swimInd].swimmersArray = [];
+            }
+            arr = disciplineInputData.semifinalsPhaseSwims[swimInd].swimmersArray;
+        }
+        else if (phase == "Finals") {
+            if (!disciplineInputData.finalsPhaseSwims[swimInd].swimmersArray) {
+                disciplineInputData.finalsPhaseSwims[swimInd].swimmersArray = [];
+            }
+            arr = disciplineInputData.finalsPhaseSwims[swimInd].swimmersArray;
+        }
+        updateSwimmersInArray(arr, laneNumb, swimmer_id)
+
+    }
+
+    //Отобразить на экране карточку для ввода сведений о заплывах
+    function displayCardInputsForSwimSelection() {
+        function generateAccordionElemHTMLForSingleSwim(phaseName, swimInd, hasSwimmers) {
+            let phaseNameStr = "";
+            let SwimNumb = swimInd + 1;
+            if (phaseName == "Finals") {
+                phaseNameStr = "финала"
+            }
+            else if (phaseName == "Semifinals") {
+                phaseNameStr = "полуфинала"
+            }
+            else if (phaseName == "Heats") {
+                phaseNameStr = "отборочных"
+            }
+            HTMLRes = null;
+            if (!hasSwimmers) {
+                HTMLRes = `<div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#swimInput${phaseName}Swim${swimInd}" aria-expanded="false"
+                            aria-controls="swimInput${phaseName}Swim${swimInd}">
+                            Заплыв ${SwimNumb} фазы ${phaseNameStr}
+                        </button>
+                    </h2>
+                    <div id="swimInput${phaseName}Swim${swimInd}" class="accordion-collapse collapse">
+                        <div class="accordion-body pt-0 pb-1">
+                            <div class="row g-0">
+                                <div class="col-12 col-md-12 col-xl-12 mt-0 mb-0 pt-0 pb-0">
+                                    <label for="inputDatetimeSwimInput${phaseName}Swim${swimInd}" class="form-label mb-0 mt-0 pt-0"
+                                        >Дата и
+                                        время:</label>
+                                </div>
+                                <div class="col-12 col-md-12 col-xl-12 mt-0 mb-0 pt-0 pb-0">
+                                    <input type="datetime-local" class="form-control"
+                                        id="inputDatetimeSwimInput${phaseName}Swim${swimInd}" step="1" onchange="onSelectedForDateTimeFieldForSwimInput(this,'${phaseName}',${swimInd})">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+            }
+            else {
+                HTMLRes = `<div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#swimInput${phaseName}Swim${swimInd}" aria-expanded="true"
+                            aria-controls="swimInput${phaseName}Swim${swimInd}">
+                            Заплыв ${SwimNumb} фазы ${phaseNameStr}
+                        </button>
+                    </h2>
+                    <div id="swimInput${phaseName}Swim${swimInd}" class="accordion-collapse collapse">
+                        <div class="accordion-body pt-0 pb-1">
+                            <div class="row g-0">
+                                <div class="col-12 col-md-12 col-xl-12 mt-0 mb-0 pt-0 pb-0">
+                                    <label for="inputDatetimeSwimInput${phaseName}Swim${swimInd}" class="form-label mb-0 mt-0 pt-0"
+                                        >
+                                        Дата и время:</label>
+                                </div>
+                                <div class="col-12 col-md-12 col-xl-12 mt-0 mb-0 pt-0 pb-0">
+                                    <input type="datetime-local" class="form-control"
+                                        id="inputDatetimeSwimInput${phaseName}Swim${swimInd}" step="1" onchange="onSelectedForDateTimeFieldForSwimInput(this,'${phaseName}',${swimInd})">
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 mt-1 text-center fw-semibold border d-flex align-items-center justify-content-center pt-2">
+                                    <label class="form-label">Дорожка</label>
+                                </div>
+                                <div
+                                    class="col-9 col-md-10 col-lg-11 mt-1 fw-semibold border ps-2 d-flex align-items-center pt-2">
+                                    <label class="form-label">Пловец</label>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">0</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane0" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},0)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">1</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane1" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},1)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">2</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane2" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},2)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">3</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane3" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},3)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">4</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane4" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},4)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">5</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane5" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},5)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">6</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane6" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},6)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">7</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane7" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},7)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">8</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane8" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},8)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                                <div
+                                    class="col-3 col-md-2 col-lg-1 text-center border d-flex align-items-center justify-content-center">
+                                    <label class="form-label  pt-2">9</label>
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11 border">
+                                    <select id="selectSwimmer${phaseName}${swimInd}Lane9" class="form-select"
+                                        onchange="onSelectedForSwimmerFieldForSwimInput(this,'${phaseName}',${swimInd},9)">
+                                        <option value="" selected>Нет пловца</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+            }
+            return HTMLRes;
+        }
+        //Добавить элементы на страницу
+        document.body.insertAdjacentHTML('beforeend', `<div class="card bg-body rounded-4 shadow-sm mt-2 ms-1 me-1">
+        <div class="card-header">
+            Введите сведения о заплывах
+        </div>
+        <div class="card-body m-0 p-0">
+            <div class="accordion accordion-flush m-0 p-0" id="swimInputAccordeon"></div>
+            <div class="alert alert-danger mt-0 ms-1 me-1 mb-1 d-none" id="swimInputInvalidFeedback"></div>
+        </div>
+    </div>
+    <div class="card bg-body rounded-4 shadow-sm mt-2 ms-1 me-1">
+        <button class="btn btn-primary btn-lg" id="buttonPredict" onclick="showPredictions()">Предсказать
+            дисциплину</button>
+    </div>`)
+        let isFirst = true;
+        if (disciplineInputData.heatsPhaseSwims != null) {
+            for (let i = 0; i < disciplineInputData.heatsPhaseSwims.length; i++) {
+                html_text = generateAccordionElemHTMLForSingleSwim('Heats', i, isFirst)
+                document.getElementById("swimInputAccordeon").insertAdjacentHTML('beforeend', html_text)
+                if (isFirst) {
+                    for (let j = 0; j < 10; j++) {
+                        select = document.getElementById(`selectSwimmerHeats${i}Lane${j}`);
+                        tomsel = new TomSelect(`#selectSwimmerHeats${i}Lane${j}`, {
+                            placeholder: 'Нет пловца',
+                            maxOptions: false,
+                            allowEmptyOption: true,
+                            render: {
+                                item: function (data, escape) { //Изменить стиль в самом поле ввода
+                                    //Для пустых значений - стиль плейсхолдера
+                                    if (!data.value || data.value === "") {
+                                        return `<div style="color: var(--bs-secondary-color);">${escape(data.text)}</div>`;
+                                    }
+                                    return `<div>${escape(data.text)}</div>`; //Иначе - стандартный стиль
+                                }
+                            }
+                        });
+                        (Object.keys(swimmersDict)).forEach(key => { tomsel.addOption({ "text": swimmersDict[key].full_name, "value": swimmersDict[key].id }); });
+                    }
+                }
+            }
+            isFirst = false;
+        }
+        if (disciplineInputData.semifinalsPhaseSwims != null) {
+            for (let i = 0; i < disciplineInputData.semifinalsPhaseSwims.length; i++) {
+                html_text = generateAccordionElemHTMLForSingleSwim('Semifinals', i, isFirst)
+                document.getElementById("swimInputAccordeon").insertAdjacentHTML('beforeend', html_text)
+                if (isFirst) {
+                    for (let j = 0; j < 10; j++) {
+                        select = document.getElementById(`selectSwimmerSemifinals${i}Lane${j}`);
+
+
+                        tomsel = new TomSelect(`#selectSwimmerSemifinals${i}Lane${j}`, {
+                            placeholder: 'Нет пловца',
+                            maxOptions: false,
+                            allowEmptyOption: true,
+                            render: {
+                                item: function (data, escape) { //Изменить стиль в самом поле ввода
+                                    //Для пустых значений - стиль плейсхолдера
+                                    if (!data.value || data.value === "") {
+                                        return `<div style="color: var(--bs-secondary-color);">${escape(data.text)}</div>`;
+                                    }
+                                    return `<div>${escape(data.text)}</div>`; //Иначе - стандартный стиль
+                                }
+                            }
+                        });
+                        (Object.keys(swimmersDict)).forEach(key => { tomsel.addOption({ "text": swimmersDict[key].full_name, "value": swimmersDict[key].id }); });
+                    }
+                }
+            }
+            isFirst = false;
+        }
+        for (let i = 0; i < disciplineInputData.finalsPhaseSwims.length; i++) {
+            html_text = generateAccordionElemHTMLForSingleSwim('Finals', i, isFirst)
+            document.getElementById("swimInputAccordeon").insertAdjacentHTML('beforeend', html_text)
+            if (isFirst) {
+                for (let j = 0; j < 10; j++) {
+                    select = document.getElementById(`selectSwimmerFinals${i}Lane${j}`);
+
+
+                    tomsel = new TomSelect(`#selectSwimmerFinals${i}Lane${j}`, {
+                        placeholder: 'Нет пловца',
+                        maxOptions: false,
+                        allowEmptyOption: true,
+                        render: {
+                            item: function (data, escape) { //Изменить стиль в самом поле ввода
+                                //Для пустых значений - стиль плейсхолдера
+                                if (!data.value || data.value === "") {
+                                    return `<div style="color: var(--bs-secondary-color);">${escape(data.text)}</div>`;
+                                }
+                                return `<div>${escape(data.text)}</div>`; //Иначе - стандартный стиль
+                            }
+                        }
+                    });
+                    (Object.keys(swimmersDict)).forEach(key => { tomsel.addOption({ "text": swimmersDict[key].full_name, "value": swimmersDict[key].id }); });
+                }
+            }
+        }
+
+
+
+
+
+
+    }
+
+    //Отобразить на экране карточку для ввода числа заплывов
+    function displayCardInputsForPhaseSwimCount(phase) //phase - фаза для которой вводим число заплывов
+    {
+        let minVal = 0
+        let maxVal = 1
+        let phaseStr = ""
+        if (phase == "Heats") {
+            minVal = MIN_SWIMS_NUMBER_IN_HEATS;
+            maxVal = MAX_SWIMS_NUMBER_IN_HEATS;
+            phaseStr = "отборочных"
+        }
+        else if (phase == "Finals") {
+            minVal = MIN_SWIMS_NUMBER_IN_FINALS;
+            maxVal = MAX_SWIMS_NUMBER_IN_FINALS;
+            phaseStr = "финала"
+        }
+
+
+        html = `<div class="card bg-body rounded-4 shadow-sm mt-2 ms-1 me-1">
+        <div class="card-header">
+            Введите число заплывов в фазе ${phaseStr}
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-6 col-xl-4">
+                    <label for="input" class="form-label">Введите число заплывов в фазе ${phaseStr}:</label>
+                </div>
+                <div class="col-12 col-md-6 col-xl-8">
+                    <input onchange="onSelectedForField(this)" id="inputPhaseSwimCount" type="number" class="form-control" min=${minVal} max=${maxVal} step="1">
+                    <div class="invalid-feedback" id="phaseSwimCountInvalidFeedback">Введите целое число от ${minVal} до ${maxVal}!</div>
+                </div>
+                
+                <div class="col-12 col-md-12 col-xl-12 ">
+                    <button class="btn btn-primary w-100" id="buttonApplyPhaseSwimCount" onclick="applyPhaseSwimCount('${phase}')">Применить</button>
+                </div>
+            </div>
+        </div>
+    </div>`
+        document.body.insertAdjacentHTML('beforeend', html);
+
+    }
+
+    //После выбора числа элементов
+    function applyPhaseSwimCount(phase) //phase - фаза для которой выбрали число элементов
+    {
+        function validate() {
+            if (!document.getElementById("inputPhaseSwimCount").value) {
+                document.getElementById('inputPhaseSwimCount').classList.add('is-invalid');
+                return false;
+            }
+            let count = document.getElementById("inputPhaseSwimCount").value
+            let minVal = 0
+            let maxVal = 0
+            if (phase == "Heats") {
+                minVal = MIN_SWIMS_NUMBER_IN_HEATS
+                maxVal = MAX_SWIMS_NUMBER_IN_HEATS
+            }
+            else if (phase == "Finals") {
+                minVal = MIN_SWIMS_NUMBER_IN_FINALS
+                maxVal = MAX_SWIMS_NUMBER_IN_FINALS
+            }
+            if (count < minVal || count > maxVal) {
+                document.getElementById('inputPhaseSwimCount').classList.add('is-invalid');
+                return false;
+            }
+            return true;
+        }
+        function disableInputs() {
+            document.getElementById("buttonApplyPhaseSwimCount").disabled = true;
+            document.getElementById("inputPhaseSwimCount").disabled = true;
+        }
+        if (!validate()) {
+            return;
+        }
+        disableInputs();
+        count = document.getElementById("inputPhaseSwimCount").value;
+        if (phase == 'Heats') {
+            disciplineInputData.heatsPhaseSwims = Array.from({ length: count }, () => ({}));
+        }
+        else if (phase == "Finals") {
+            disciplineInputData.finalsPhaseSwims = Array.from({ length: count }, () => ({}));
+        }
+        displayCardInputsForSwimSelection();
+    }
+
+
+
+    //После ввода формы с общими сведениями о дисциплине
+    function applyDisciplineData() {
+        function validate(style, distance, sex, poolLength, hostCountryCode, hostRegion, hasSemifinals, hasFinals) {
+            let isValid = true;
+            if (!style || style === "") {
+                document.getElementById('selectStyle').classList.add('is-invalid');
+                isValid = false;
+            }
+            if (!distance || distance === "") {
+                document.getElementById('selectDistance').classList.add('is-invalid');
+                isValid = false;
+            }
+            if (!sex || sex === "") {
+                document.getElementById('selectSex').classList.add('is-invalid');
+                isValid = false;
+            }
+            if (!poolLength || poolLength === "") {
+                document.getElementById('selectPoolLength').classList.add('is-invalid');
+                isValid = false;
+            }
+            if (!hostCountryCode || hostCountryCode === "" || !hostRegion || !["Oceania", "Americas", "Europe", "Asia", "Africa"].includes(hostRegion)) //Если не выбрана страна либо для страны нет региона
+            {
+                //При наличии обертки томселект указываем стиль отображения обертки как ошибочный
+                const selectHostCountry = document.getElementById('selectHostCountry');
+                if (selectHostCountry && selectHostCountry.tomselect && selectHostCountry.tomselect.wrapper) {
+                    selectHostCountry.tomselect.wrapper.classList.add('is-invalid');
+                }
+                else { //При отсутствии обертки томселект указываем стиль отображения селекта как ошибочный
+                    selectHostCountry.classList.add('is-invalid');
+                }
+                isValid = false;
+            }
+            return isValid;
+        }
+        function disableInputs() {
+            document.getElementById("selectStyle").disabled = true;
+            document.getElementById("selectDistance").disabled = true;
+            document.getElementById("selectSex").disabled = true;
+            document.getElementById("selectPoolLength").disabled = true;
+            document.getElementById("selectHostCountry").disabled = true;
+            document.getElementById('selectHostCountry').tomselect.disable();
+            document.getElementById("checkHasSemifinals").disabled = true;
+            document.getElementById("checkHasHeats").disabled = true;
+            document.getElementById("buttonApplyDisciplineData").disabled = true;
+        }
+        const style = document.getElementById("selectStyle").value;
+        const distance = document.getElementById("selectDistance").value;
+        const sex = document.getElementById("selectSex").value;
+        const poolLength = document.getElementById("selectPoolLength").value;
+        const hostCountryCode = document.getElementById("selectHostCountry").value;
+        const hostRegion = hostCountries.find(x => x.code === hostCountryCode)?.region;
+        const hasSemifinals = document.getElementById("checkHasSemifinals").checked;
+        const hasHeats = document.getElementById("checkHasHeats").checked;
+        if (!validate(style, distance, sex, poolLength, hostCountryCode, hostRegion, hasSemifinals, hasHeats)) {
+            return;
+        }
+        disciplineInputData.sex = sex;
+        disciplineInputData.style = style;
+        disciplineInputData.distance = Number(distance);
+        disciplineInputData.poolLength = Number(poolLength);
+        disciplineInputData.hostCountryCode = hostCountryCode;
+        disciplineInputData.hostRegion = hostRegion;
+        disciplineInputData.finalsPhaseSwims = [{}];
+        if (hasHeats) {
+            disciplineInputData.heatsPhaseSwims = [];
+        }
+        else {
+            disciplineInputData.heatsPhaseSwims = null;
+        }
+        if (hasSemifinals) {
+            disciplineInputData.semifinalsPhaseSwims = [{}, {}];
+        }
+        else {
+            disciplineInputData.semifinalsPhaseSwims = null;
+        }
+        disableInputs();
+        if (!hasHeats && !hasSemifinals) {
+            displayCardInputsForPhaseSwimCount("Finals")
+        }
+        else if (hasHeats) {
+            displayCardInputsForPhaseSwimCount("Heats")
+        }
+        else {
+            displayCardInputsForSwimSelection();
+        }
+    }
+
+    //Функия для валидации, отправления запроса на бэкенда и показа результатов предсказания
+    function showPredictions() {
+        function validateInput() {
+            function checkIfTimesInsideEverySwim() {
+                if (disciplineInputData.heatsPhaseSwims) {
+                    for (let i = 0; i < disciplineInputData.heatsPhaseSwims.length; i++) {
+                        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(disciplineInputData.heatsPhaseSwims[i].swim_datetime_local_iso)) { //Добавить в формат секунды, если браузер их обрезал
+                            disciplineInputData.heatsPhaseSwims[i].swim_datetime_local_iso += ':00';
+                        }
+                        if (!((/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/).test(disciplineInputData.heatsPhaseSwims[i].swim_datetime_local_iso))) {
+                            return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы отборочных дата и время не введены или введены не полностью!` };
+                        }
+                        const dt = new Date(disciplineInputData.heatsPhaseSwims[i].swim_datetime_local_iso)
+                        if (isNaN(dt) || dt < MIN_ALLOWED_SWIM_DATETIME || dt > MAX_ALLOWED_SWIM_DATETIME) {
+                            return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы отборочных дата и время дата и время должны быть от 2026 до 2050 года!` };
+                        }
+                    }
+                }
+                if (disciplineInputData.semifinalsPhaseSwims) {
+                    for (let i = 0; i < disciplineInputData.semifinalsPhaseSwims.length; i++) {
+                        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(disciplineInputData.semifinalsPhaseSwims[i].swim_datetime_local_iso)) { //Добавить в формат секунды, если браузер их обрезал
+                            disciplineInputData.semifinalsPhaseSwims[i].swim_datetime_local_iso += ':00';
+                        }
+                        if (!((/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/).test(disciplineInputData.semifinalsPhaseSwims[i].swim_datetime_local_iso))) {
+                            return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы полуфинала дата и время не введены или введены не полностью!` };
+                        }
+                        const dt = new Date(disciplineInputData.semifinalsPhaseSwims[i].swim_datetime_local_iso)
+                        if (isNaN(dt) || dt < MIN_ALLOWED_SWIM_DATETIME || dt > MAX_ALLOWED_SWIM_DATETIME) {
+                            return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы полуфинала дата и время дата и время должны быть от 2026 до 2050 года!` };
+                        }
+                    }
+                }
+                for (let i = 0; i < disciplineInputData.finalsPhaseSwims.length; i++) {
+                    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(disciplineInputData.finalsPhaseSwims[i].swim_datetime_local_iso)) { //Добавить в формат секунды, если браузер их обрезал
+                        disciplineInputData.finalsPhaseSwims[i].swim_datetime_local_iso += ':00';
+                    }
+                    if (!((/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/).test(disciplineInputData.finalsPhaseSwims[i].swim_datetime_local_iso))) {
+                        return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы финала дата и время не введены или введены не полностью!` };
+                    }
+                    const dt = new Date(disciplineInputData.finalsPhaseSwims[i].swim_datetime_local_iso)
+                    if (isNaN(dt) || dt < MIN_ALLOWED_SWIM_DATETIME || dt > MAX_ALLOWED_SWIM_DATETIME) {
+                        return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы финала дата и время дата и время должны быть от 2026 до 2050 года!` };
+                    }
+                }
+                return { "checkPassed": true, "errorMessage": `` };
+            }
+
+            function checkIfSwimmersInsideEveryEntrySwim() {
+                if (disciplineInputData.heatsPhaseSwims) {
+                    for (let i = 0; i < disciplineInputData.heatsPhaseSwims.length; i++) {
+                        if (!disciplineInputData.heatsPhaseSwims[i].swimmersArray || disciplineInputData.heatsPhaseSwims[i].swimmersArray.length == 0) {
+                            return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы отборочных отсутствуют пловцы!` };
+                        }
+                    }
+                }
+                else if (disciplineInputData.semifinalsPhaseSwims) {
+                    for (let i = 0; i < disciplineInputData.semifinalsPhaseSwims.length; i++) {
+                        if (!disciplineInputData.semifinalsPhaseSwims[i].swimmersArray || disciplineInputData.semifinalsPhaseSwims[i].swimmersArray.length == 0) {
+                            return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы полуфинала отсутствуют пловцы!` };
+                        }
+                    }
+                }
+                else {
+                    for (let i = 0; i < disciplineInputData.finalsPhaseSwims.length; i++) {
+                        if (!disciplineInputData.finalsPhaseSwims[i].swimmersArray || disciplineInputData.finalsPhaseSwims[i].swimmersArray.length == 0) {
+                            return { "checkPassed": false, "errorMessage": `В заплыве ${i + 1} фазы финала отсутствуют пловцы!` };
+                        }
+                    }
+                }
+                return { "checkPassed": true, "errorMessage": `` };
+            }
+
+            function checkIfNoDuplicateSwimmersInEntryPhase() {
+                const foundSwimmersDict = {}
+                if (disciplineInputData.heatsPhaseSwims) {
+                    for (let i = 0; i < disciplineInputData.heatsPhaseSwims.length; i++) {
+                        for (let j = 0; j < disciplineInputData.heatsPhaseSwims[i].swimmersArray.length; j++) {
+                            if (disciplineInputData.heatsPhaseSwims[i].swimmersArray[j].id in foundSwimmersDict) {
+                                const swimmerName = swimmersDict[disciplineInputData.heatsPhaseSwims[i].swimmersArray[j].id].full_name;
+                                const { "lane": prevEncounteredLane, "swim": prevEncounteredSwim } = foundSwimmersDict[disciplineInputData.heatsPhaseSwims[i].swimmersArray[j].id];
+                                const curLane = disciplineInputData.heatsPhaseSwims[i].swimmersArray[j].lane;
+                                return { "checkPassed": false, "errorMessage": `В фазе отборочных один и тот же пловец ${swimmerName} встречается несколько раз (в заплыве ${prevEncounteredSwim} на дорожке ${prevEncounteredLane} и в заплыве ${i + 1} на дорожке ${curLane})!` };
+                            }
+                            foundSwimmersDict[disciplineInputData.heatsPhaseSwims[i].swimmersArray[j].id] = { "lane": disciplineInputData.heatsPhaseSwims[i].swimmersArray[j].lane, "swim": i + 1 };
+                        }
+                    }
+                }
+                else if (disciplineInputData.semifinalsPhaseSwims) {
+                    for (let i = 0; i < disciplineInputData.semifinalsPhaseSwims.length; i++) {
+                        for (let j = 0; j < disciplineInputData.semifinalsPhaseSwims[i].swimmersArray.length; j++) {
+                            if (disciplineInputData.semifinalsPhaseSwims[i].swimmersArray[j].id in foundSwimmersDict) {
+                                const swimmerName = swimmersDict[disciplineInputData.semifinalsPhaseSwims[i].swimmersArray[j].id].full_name;
+                                const { "lane": prevEncounteredLane, "swim": prevEncounteredSwim } = foundSwimmersDict[disciplineInputData.semifinalsPhaseSwims[i].swimmersArray[j].id];
+                                const curLane = disciplineInputData.semifinalsPhaseSwims[i].swimmersArray[j].lane;
+                                return { "checkPassed": false, "errorMessage": `В фазе полуфинала один и тот же пловец ${swimmerName} встречается несколько раз (в заплыве ${prevEncounteredSwim} на дорожке ${prevEncounteredLane} и в заплыве ${i + 1} на дорожке ${curLane})!` };
+                            }
+                            foundSwimmersDict[disciplineInputData.semifinalsPhaseSwims[i].swimmersArray[j].id] = { "lane": disciplineInputData.semifinalsPhaseSwims[i].swimmersArray[j].lane, "swim": i + 1 };
+                        }
+                    }
+                }
+                else {
+                    for (let i = 0; i < disciplineInputData.finalsPhaseSwims.length; i++) {
+                        for (let j = 0; j < disciplineInputData.finalsPhaseSwims[i].swimmersArray.length; j++) {
+                            if (disciplineInputData.finalsPhaseSwims[i].swimmersArray[j].id in foundSwimmersDict) {
+                                const swimmerName = swimmersDict[disciplineInputData.finalsPhaseSwims[i].swimmersArray[j].id].full_name;
+                                const { "lane": prevEncounteredLane, "swim": prevEncounteredSwim } = foundSwimmersDict[disciplineInputData.finalsPhaseSwims[i].swimmersArray[j].id];
+                                const curLane = disciplineInputData.finalsPhaseSwims[i].swimmersArray[j].lane;
+                                return { "checkPassed": false, "errorMessage": `В фазе финала один и тот же пловец ${swimmerName} встречается несколько раз (в заплыве ${prevEncounteredSwim} на дорожке ${prevEncounteredLane} и в заплыве ${i + 1} на дорожке ${curLane})!` };
+                            }
+                            foundSwimmersDict[disciplineInputData.finalsPhaseSwims[i].swimmersArray[j].id] = { "lane": disciplineInputData.finalsPhaseSwims[i].swimmersArray[j].lane, "swim": i + 1 };
+                        }
+                    }
+                }
+                return { "checkPassed": true, "errorMessage": `` };
+            }
+
+            function checkIfSwimsInsidePhaseOrderedBySwimTime() {
+                if (disciplineInputData.heatsPhaseSwims) {
+                    let previousDate = new Date(disciplineInputData.heatsPhaseSwims[0].swim_datetime_local_iso);
+                    for (let i = 1; i < disciplineInputData.heatsPhaseSwims.length; i++) {
+                        let newDate = new Date(disciplineInputData.heatsPhaseSwims[i].swim_datetime_local_iso);
+                        if (previousDate > newDate) {
+                            return { "checkPassed": false, "errorMessage": `В фазе отборочных заплывы не отсортированы по времени проведения (заплыв ${i} по времени позже заплыва ${i + 1})!` };
+                        }
+                        previousDate = newDate;
+                    }
+                }
+                if (disciplineInputData.semifinalsPhaseSwims) {
+                    let previousDate = new Date(disciplineInputData.semifinalsPhaseSwims[0].swim_datetime_local_iso);
+                    for (let i = 1; i < disciplineInputData.semifinalsPhaseSwims.length; i++) {
+                        let newDate = new Date(disciplineInputData.semifinalsPhaseSwims[i].swim_datetime_local_iso);
+                        if (previousDate > newDate) {
+                            return { "checkPassed": false, "errorMessage": `В фазе полуфинала заплывы не отсортированы по времени проведения (заплыв ${i} по времени позже заплыва ${i + 1})!` };
+                        }
+                        previousDate = newDate;
+                    }
+                }
+                let previousDate = new Date(disciplineInputData.finalsPhaseSwims[0].swim_datetime_local_iso);
+                for (let i = 1; i < disciplineInputData.finalsPhaseSwims.length; i++) {
+                    let newDate = new Date(disciplineInputData.finalsPhaseSwims[i].swim_datetime_local_iso);
+                    if (previousDate > newDate) {
+                        return { "checkPassed": false, "errorMessage": `В фазе финала заплывы не отсортированы по времени проведения (заплыв ${i} по времени позже заплыва ${i + 1})!` };
+                    }
+                    previousDate = newDate;
+                }
+                return { "checkPassed": true, "errorMessage": `` };
+            }
+
+            function checkIfThereIsMinimumTimeBetweenPhases() {
+                prevPhaseMaxDateTime = new Date(1950, 1, 1, 1, 1, 1);
+                prevPhaseStr = "";
+                if (disciplineInputData.heatsPhaseSwims) {
+                    let minPhaseDate = new Date(disciplineInputData.heatsPhaseSwims[0].swim_datetime_local_iso);
+                    let maxPhaseDate = new Date(disciplineInputData.heatsPhaseSwims[0].swim_datetime_local_iso);
+                    for (let i = 1; i < disciplineInputData.heatsPhaseSwims.length; i++) {
+                        minPhaseDate = new Date(Math.min(minPhaseDate.getTime(), new Date(disciplineInputData.heatsPhaseSwims[i].swim_datetime_local_iso).getTime()));
+                        maxPhaseDate = new Date(Math.max(maxPhaseDate.getTime(), new Date(disciplineInputData.heatsPhaseSwims[i].swim_datetime_local_iso).getTime()));
+                    }
+                    prevPhaseMaxDateTime = maxPhaseDate;
+                    prevPhaseStr = "отборочных"
+                }
+                if (disciplineInputData.semifinalsPhaseSwims) {
+                    let minPhaseDate = new Date(disciplineInputData.semifinalsPhaseSwims[0].swim_datetime_local_iso);
+                    let maxPhaseDate = new Date(disciplineInputData.semifinalsPhaseSwims[0].swim_datetime_local_iso);
+                    for (let i = 1; i < disciplineInputData.semifinalsPhaseSwims.length; i++) {
+                        minPhaseDate = new Date(Math.min(minPhaseDate.getTime(), new Date(disciplineInputData.semifinalsPhaseSwims[i].swim_datetime_local_iso).getTime()));
+                        maxPhaseDate = new Date(Math.max(maxPhaseDate.getTime(), new Date(disciplineInputData.semifinalsPhaseSwims[i].swim_datetime_local_iso).getTime()));
+                    }
+                    if (new Date(prevPhaseMaxDateTime.getTime() + MIN_TIMEDELTA_BETWEEN_PHASES) > minPhaseDate) {
+                        return { "checkPassed": false, "errorMessage": `Фаза полуфинала начинается раньше, чем через ${MIN_TIMEDELTA_BETWEEN_PHASES_STR} после фазы ${prevPhaseStr}!` };
+                    }
+                    prevPhaseMaxDateTime = maxPhaseDate;
+                    prevPhaseStr = "полуфинала"
+                }
+                let minPhaseDate = new Date(disciplineInputData.finalsPhaseSwims[0].swim_datetime_local_iso);
+                let maxPhaseDate = new Date(disciplineInputData.finalsPhaseSwims[0].swim_datetime_local_iso);
+                for (let i = 1; i < disciplineInputData.finalsPhaseSwims.length; i++) {
+                    minPhaseDate = new Date(Math.min(minPhaseDate.getTime(), new Date(disciplineInputData.finalsPhaseSwims[i].swim_datetime_local_iso).getTime()));
+                    maxPhaseDate = new Date(Math.max(maxPhaseDate.getTime(), new Date(disciplineInputData.finalsPhaseSwims[i].swim_datetime_local_iso).getTime()));
+                }
+                if (new Date(prevPhaseMaxDateTime.getTime() + MIN_TIMEDELTA_BETWEEN_PHASES) > minPhaseDate) {
+                    return { "checkPassed": false, "errorMessage": `Фаза финала начинается раньше, чем через ${MIN_TIMEDELTA_BETWEEN_PHASES_STR} после фазы ${prevPhaseStr}!` };
+                }
+                prevPhaseMaxDateTime = maxPhaseDate;
+                prevPhaseStr = "финала"
+                return { "checkPassed": true, "errorMessage": `` };
+            }
+
+            const errorPopup = document.getElementById("swimInputInvalidFeedback");
+            let { checkPassed, errorMessage } = checkIfTimesInsideEverySwim();
+            if (!checkPassed) {
+                errorPopup.classList.remove('d-none');
+                errorPopup.innerHTML = errorMessage;
+                return false;
+            }
+            ({ checkPassed, errorMessage } = checkIfSwimmersInsideEveryEntrySwim());
+            if (!checkPassed) {
+                errorPopup.classList.remove('d-none');
+                errorPopup.innerHTML = errorMessage;
+                return false;
+            }
+            ({ checkPassed, errorMessage } = checkIfNoDuplicateSwimmersInEntryPhase());
+            if (!checkPassed) {
+                errorPopup.classList.remove('d-none');
+                errorPopup.innerHTML = errorMessage;
+                return false;
+            }
+            ({ checkPassed, errorMessage } = checkIfSwimsInsidePhaseOrderedBySwimTime());
+            if (!checkPassed) {
+                errorPopup.classList.remove('d-none');
+                errorPopup.innerHTML = errorMessage;
+                return false;
+            }
+            ({ checkPassed, errorMessage } = checkIfThereIsMinimumTimeBetweenPhases());
+            if (!checkPassed) {
+                errorPopup.classList.remove('d-none');
+                errorPopup.innerHTML = errorMessage;
+                return false;
+            }
+            return true;
+        }
+
+        function createQuery() {
+            function parseSwimsArrayIntoJSArray(arr) {
+                if (!arr) {
+                    return arr
+                }
+                returnArr = []
+                for (let i = 0; i < arr.length; i++) {
+                    const newElem = {
+                        "swim_datetime_local_iso": arr[i].swim_datetime_local_iso,
+                    }
+                    if (arr[i].swimmersArray) {
+                        newElem['swimmers_array'] = []
+                        for (let j = 0; j < arr[i].swimmersArray.length; j++) {
+                            const id = arr[i].swimmersArray[j].id;
+                            const swimmer = swimmersDict[id];
+                            const newSwimmer = {
+                                "lane": arr[i].swimmersArray[j].lane,
+                                "id": id,
+                                "country_code": swimmer.country_code,
+                                "height": swimmer.height,
+                                "dob": swimmer.dob,
+                            }
+                            newElem['swimmers_array'].push(newSwimmer);
+                        }
+                    }
+                    returnArr.push(newElem);
+                }
+                return returnArr;
+            }
+            let jsInput = {
+                "discipline_sex": disciplineInputData.sex,
+                "discipline_distance": disciplineInputData.distance,
+                "discipline_style": disciplineInputData.style,
+                "discipline_pool_length": disciplineInputData.poolLength,
+                "host_country_code": disciplineInputData.hostCountryCode,
+                "host_region": disciplineInputData.hostRegion,
+                "finals_phase_swims": parseSwimsArrayIntoJSArray(disciplineInputData.finalsPhaseSwims),
+                "semifinals_phase_swims": parseSwimsArrayIntoJSArray(disciplineInputData.semifinalsPhaseSwims),
+                "heats_phase_swims": parseSwimsArrayIntoJSArray(disciplineInputData.heatsPhaseSwims)
+            }
+            return jsInput;
+        }
+
+        function getPredictionsFromQuery(body) {
+            axios.post("/disciplinePrediction", body).then(response => processPredictions(response.data)).catch(err => showErrorToast(err))
+        }
+
+
+        if (!validateInput()) {
+            return
+        }
+        const inputJSON = createQuery();
+        getPredictionsFromQuery(inputJSON);
+    }
+
+    //Функция для обработки предсказаний после их получения
+    function processPredictions(data) {
+        function clearPredictions() {
+            const resultsCard = document.getElementById('resultsCard');
+            if (resultsCard) {
+                resultsCard.remove();
+            }
+        }
+        function displayPredictions() {
+            function generateInnerHTMLForSinglePhase(phase) {
+                const swimsStrArray = [];
+                let arr = [];
+                let phaseText = "";
+                if (phase == "Heats") {
+                    arr = predictions.heats_phase_swims;
+                    phaseText = "отборочных";
+                }
+                else if (phase == "Finals") {
+                    arr = predictions.finals_phase_swims;
+                    phaseText = "финала";
+                }
+                else if (phase == "Semifinals") {
+                    arr = predictions.semifinals_phase_swims;
+                    phaseText = "полуфинала";
+                }
+                for (let i = 0; i < arr.length; i++) {
+                    let swimmersStrArray = [];
+                    for (let j = 0; j < arr[i].swimmers_array.length; j++) {
+                        let swimmer = arr[i].swimmers_array[j]
+                        let swimmerStr = `<div class="row g-0 border-top border-bottom">
+                                <div class="col-12 col-md-6 col-lg-2 ps-2 pt-1 pt-md-0 ">
+                                    <div class="text-secondary small">Дорожка:</div>
+                                    <div class="fw-semibold" id="">${swimmer.lane}</div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-2 ps-2 pt-1 pt-md-0 ">
+                                    <div class="text-secondary small">Пловец:</div>
+                                    <div class="fw-semibold" id="">${swimmersDict[swimmer.id].full_name}</div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-2 ps-2 pt-1 pt-md-0">
+                                    <div class="text-secondary small">Время:</div>
+                                    <div class="fw-semibold" id="">${formatResultTime(swimmer.predicted_time)}</div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-2 ps-2 pt-1 pt-md-0">
+                                    <div class="text-secondary small">Место (заплыв):</div>
+                                    <div class="fw-semibold" id="">${swimmer.predicted_place_in_swim}</div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-2  ps-2 pt-1 pt-md-0 ">
+                                    <div class="text-secondary small">Место (фаза):</div>
+                                    <div class="fw-semibold" id="">${swimmer.predicted_place_in_phase}</div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-2 fw-semibold ps-0 d-flex align-items-center ps-2 pe-2 mb-0 pb-1 pt-1">
+                                    <button class="btn btn-primary btn-lg w-100 h-100 p-0 m-0"
+                                        id=""
+                                        onclick="showGraphsModal('${phase}',${i},${j})">Графики...</button>
+                                </div>
+                            </div>`;
+                        swimmersStrArray.push(swimmerStr);
+                    }
+                    swimsStrArray.push(`<div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#resultsAccordionEntry${phase}${i}" aria-expanded="true"
+                            aria-controls="resultsAccordionEntry${phase}${i}">
+                            Заплыв ${i + 1} фазы ${phaseText}
+                        </button>
+                    </h2>
+                    <div id="resultsAccordionEntry${phase}${i}" class="accordion-collapse collapse">
+                        <div class="accordion-body pt-0 pb-1">
+                            ${swimmersStrArray.join('\n')}
+                        </div>
+                    </div>
+                </div>`)
+                }
+                let phaseStr = swimsStrArray.join('\n');
+                return phaseStr
+            }
+            const innerHTML = `<div class="card bg-body rounded-4 shadow-sm mt-2 ms-1 me-1" id="resultsCard">
+        <div class="card-header">
+            Предсказанные результаты дисциплины
+        </div>
+        <div class="card-body m-0 p-0">
+            <div id="resultsAccordion" class="accordion accordion-flush m-0 p-0">
+            </div>
+        </div>
+    </div>`;
+            document.body.insertAdjacentHTML('beforeend', innerHTML);
+            phasesStrArr = []
+            if (predictions.heats_phase_swims) {
+                phasesStrArr.push(generateInnerHTMLForSinglePhase("Heats"));
+            }
+            if (predictions.semifinals_phase_swims) {
+                phasesStrArr.push(generateInnerHTMLForSinglePhase("Semifinals"));
+            }
+            if (predictions.finals_phase_swims) {
+                phasesStrArr.push(generateInnerHTMLForSinglePhase("Finals"));
+            }
+            phasesStrCombined = phasesStrArr.join("\n");
+            document.getElementById('resultsAccordion').insertAdjacentHTML('beforeend', phasesStrCombined);
+        }
+
+        predictions = data;
+
+        //Убрать все предсказания из виду
+        clearPredictions();
+        //Показать предсказания
+        displayPredictions();
+    }
+
+    //Функция для форматирования результирующего времени с точность 10^-4 с
+    function formatResultTime(totalSeconds) {
+        totalSeconds = Math.round(totalSeconds * 10000) / 10000;
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds - hours * 3600) / 60);
+        const seconds = Math.floor(totalSeconds % 60);
+        const subseconds = Math.round((totalSeconds % 1) * 10000);
+        if (hours !== 0) {
+            return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(subseconds).padStart(4, '0')}`;
+        }
+        if (minutes !== 0) {
+            return `${minutes}:${String(seconds).padStart(2, '0')}.${String(subseconds).padStart(4, '0')}`;
+        }
+        return `${seconds}.${String(subseconds).padStart(4, '0')}`;
+    }
+
+    let heightChart = null;
+    let ageChart = null;
+    let laneChart = null;
+    function showGraphsModal(phase, swimInd, swimmerInd) {
+        //Получить сведения о текущем пловце
+        let chosenSwimmer = null;
+        let phaseStr = "";
+        if (phase == "Heats") {
+            chosenSwimmer = predictions.heats_phase_swims[swimInd].swimmers_array[swimmerInd];
+            phaseStr = "отборочных"
+        }
+        else if (phase == "Semifinals") {
+            chosenSwimmer = predictions.semifinals_phase_swims[swimInd].swimmers_array[swimmerInd];
+            phaseStr = "полуфинала"
+        }
+        else {
+            chosenSwimmer = predictions.finals_phase_swims[swimInd].swimmers_array[swimmerInd];
+            phaseStr = "финала"
+        }
+        const chosenSwimmerName = allswimmersDict[chosenSwimmer.id].full_name;
+        const chosenSwimmerGraphAgeDependency = chosenSwimmer.graph_age_dependency;
+        const chosenSwimmerGraphHeightDependency = chosenSwimmer.graph_height_dependency;
+        const chosenSwimmerGraphLaneDependency = chosenSwimmer.graph_lane_dependency;
+        const chosenSwimmerLane = chosenSwimmer.lane;
+
+
+        document.getElementById(`graphsModalLabel`).innerHTML = `Графики для пловца ${chosenSwimmerName} в заплыве ${swimInd + 1} фазы ${phaseStr}`;
+
+        document.getElementById('canvasHeightDependency').classList.add('d-none');
+        document.getElementById('canvasAgeDependency').classList.add('d-none');
+        document.getElementById('canvasLaneDependency').classList.add('d-none');
+        const canvasDependencyHeight = document.getElementById('canvasHeightDependency');
+        const canvasDependencyAge = document.getElementById('canvasAgeDependency');
+        const canvasDependencyLane = document.getElementById('canvasLaneDependency');
+        document.getElementById('canvasHeightDependencyLabel').classList.add('d-none');
+        document.getElementById('canvasAgeDependencyLabel').classList.add('d-none');
+        if (heightChart !== null) {
+            heightChart.destroy();
+        }
+        if (ageChart !== null) {
+            ageChart.destroy();
+        }
+        if (laneChart !== null) {
+            laneChart.destroy();
+        }
+        const modal = new bootstrap.Modal(document.getElementById('graphsModal'));
+        modal.show();
+        if (!chosenSwimmer.graph_height_dependency) //Проверка на то что есть график зависимости результата от роста
+        {
+            document.getElementById('canvasHeightDependencyLabel').classList.remove('d-none');
+        }
+        else {
+            let minY = Math.min(...chosenSwimmerGraphHeightDependency.map(p => p.y));  //Минимальное значение Y
+            let maxY = Math.max(...chosenSwimmerGraphHeightDependency.map(p => p.y));  //Максимальное значение Y
+            let range = maxY - minY;                     //Разница между мин и макс
+            let padding = Math.max(0.1, range * 0.1);   //Минимум 0.1 отступ с каждой стороны по Y
+            document.getElementById('canvasHeightDependency').classList.remove('d-none');
+            heightChart = new Chart(canvasDependencyHeight, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        data: chosenSwimmerGraphHeightDependency.map(i => ({ x: i.x, y: i.y })),
+                        pointRadius: chosenSwimmerGraphHeightDependency.map(i => i.is_current_dot ? 7 : 3),  //Выделяем жирным текущую точку
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Зависимость прогноза от роста пловца'
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            displayColors: false,
+                            callbacks: {
+                                title: function (context) {
+                                    return `Рост: ${context[0].raw.x} см`;
+                                },
+                                label: function (context) {
+                                    return `Время: ${context.raw.y.toFixed(4)} сек.`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Рост в см'
+                            }
+                        },
+                        y: {
+                            suggestedMin: minY - padding,
+                            suggestedMax: maxY + padding,
+                            ticks: {
+                                stepSize: Math.max(0.1, range / 10)
+                            },
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Время (сек.)'
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
+        if (!chosenSwimmer.dob) //Проверка на то что дата рождения пловца - не null
+        {
+            document.getElementById('canvasAgeDependencyLabel').classList.remove('d-none');
+        }
+        else {
+            document.getElementById('canvasAgeDependency').classList.remove('d-none');
+            let minY = Math.min(...chosenSwimmerGraphAgeDependency.map(p => p.y));  //Минимальное значение Y
+            let maxY = Math.max(...chosenSwimmerGraphAgeDependency.map(p => p.y));  //Максимальное значение Y
+            let range = maxY - minY;                     //Разница между мин и макс
+            let padding = Math.max(0.1, range * 0.1);   //Минимум 0.1 отступ с каждой стороны по Y
+            ageChart = new Chart(canvasDependencyAge, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        data: chosenSwimmerGraphAgeDependency.map(i => ({ x: i.x, y: i.y })),
+                        pointRadius: chosenSwimmerGraphAgeDependency.map(i => i.is_current_dot ? 7 : 3),  //Выделяем жирным текущую точку
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Зависимость прогноза от возраста пловца'
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            displayColors: false,
+                            callbacks: {
+                                title: function (context) {
+                                    return `Возраст: ${context[0].raw.x}`;
+                                },
+                                label: function (context) {
+                                    return `Время: ${context.raw.y.toFixed(4)} сек.`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Возраст'
+                            }
+                        },
+                        y: {
+                            suggestedMin: minY - padding,
+                            suggestedMax: maxY + padding,
+                            ticks: {
+                                stepSize: Math.max(0.1, range / 10)
+                            },
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Время (сек.)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+
+        let minY = Math.min(...chosenSwimmerGraphLaneDependency.map(p => p.y));  //Минимальное значение Y
+        let maxY = Math.max(...chosenSwimmerGraphLaneDependency.map(p => p.y));  //Максимальное значение Y
+        let range = maxY - minY;                     //Разница между мин и макс
+        let padding = Math.max(0.1, range * 0.1);   //Минимум 0.1 отступ с каждой стороны по Y
+        document.getElementById('canvasLaneDependency').classList.remove('d-none');
+        laneChart = new Chart(canvasDependencyLane, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    data: chosenSwimmerGraphLaneDependency.map(i => ({ x: i.x, y: i.y })),
+                    pointRadius: chosenSwimmerGraphLaneDependency.map(i => i.is_current_dot ? 7 : 3),  //Выделяем жирным текущую точку
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Зависимость прогноза от дорожки пловца'
+                    },
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        displayColors: false,
+                        callbacks: {
+                            title: function (context) {
+                                return `Дорожка: ${context[0].raw.x}`;
+                            },
+                            label: function (context) {
+                                return `Время: ${context.raw.y.toFixed(4)} сек.`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'Дорожка'
+                        }
+                    },
+                    y: {
+                        suggestedMin: minY - padding,
+                        suggestedMax: maxY + padding,
+                        ticks: {
+                            stepSize: Math.max(0.1, range / 10)
+                        },
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'Время (сек.)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+</script>
+
+</html>

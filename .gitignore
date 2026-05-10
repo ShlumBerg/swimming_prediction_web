@@ -1,0 +1,33 @@
+##### parsing
+#Убрать venv
+parsing/venv/
+
+#Убрать кэш
+parsing/__pycache__/
+
+#Убрать датасеты
+parsing/output/raw_dataset.txt
+
+##### train_models
+#Убрать venv
+train_models/.venv/
+
+#Убрать кэш
+train_models/cache_BiLSTM/
+
+#Убрать датасеты
+train_models/dataset_with_embeddings.csv
+train_models/raw_dataset.txt
+
+##### website
+#Убрать .vscode
+website/.vscode/
+website/frontend/.vscode/
+
+#Убрать venv
+website/backend/.venv/
+
+#Убрать кэш
+website/.pytest_cache/
+website/__pycache__/
+
