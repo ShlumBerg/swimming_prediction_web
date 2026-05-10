@@ -28,6 +28,6 @@ website/frontend/.vscode/
 website/backend/.venv/
 
 #Убрать кэш
-website/.pytest_cache/
-website/__pycache__/
+website/backend/.pytest_cache/
+website/backend/__pycache__/
 
