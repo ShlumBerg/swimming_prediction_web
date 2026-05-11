@@ -279,6 +279,7 @@
     MAX_ALLOWED_SWIM_DATETIME = new Date(Date.UTC(2049, 11, 31, 23, 59, 59, 0));
     MIN_TIMEDELTA_BETWEEN_PHASES = 15 * 60 * 1000;
     MIN_TIMEDELTA_BETWEEN_PHASES_STR = "15 минут";
+    MILLISECONDS_BETWEEN_BUTTON_PRESSESS_FOR_PREDICTIONS=1500;
 
 
     //Показать ошибку в виде всплывающего сообщения
@@ -1126,6 +1127,7 @@
         }
     }
 
+    let timerForPredictButton=0;
     //Функия для валидации, отправления запроса на бэкенда и показа результатов предсказания
     function showPredictions() {
         function validateInput() {
@@ -1395,6 +1397,12 @@
             axios.post("/disciplinePrediction", body).then(response => processPredictions(response.data)).catch(err => showErrorToast(err))
         }
 
+        //Если не прошло минимальное время между нажатиями кнопки, не делаем предсказание (чтобы не перегружать сервер)
+        curTime=Date.now();
+        if(curTime<timerForPredictButton+MILLISECONDS_BETWEEN_BUTTON_PRESSESS_FOR_PREDICTIONS){
+            return;
+        }
+        timerForPredictButton=curTime;
 
         if (!validateInput()) {
             return

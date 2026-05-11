@@ -241,6 +241,7 @@
 
 </body>
 <script>
+    MILLISECONDS_BETWEEN_BUTTON_PRESSESS_FOR_PREDICTIONS=1500;
 
     //Показать ошибку в виде всплывающего сообщения
     function showErrorToast(message) {
@@ -771,9 +772,16 @@
 
     }
 
-
+    let timerForPredictButton=0;
     //Функция для валидации, получения, вывода предсказаний
     function showPredictions() {
+
+        //Если не прошло минимальное время между нажатиями кнопки, не делаем предсказание (чтобы не перегружать сервер)
+        curTime=Date.now();
+        if(curTime<timerForPredictButton+MILLISECONDS_BETWEEN_BUTTON_PRESSESS_FOR_PREDICTIONS){
+            return;
+        }
+        timerForPredictButton=curTime;
 
         //Очищаем предыдущие выводы
         for (let i = 0; i < 10; i++) {
