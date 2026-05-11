@@ -874,9 +874,9 @@ def getSwimPage():
     return FileResponse(html_path)
 
 
-@app.get("/competition")
-def getCompetitionPage():
-    html_path = Path(__file__).parent.parent / "frontend" / "competition.html"
+@app.get("/discipline")
+def getDisciplinePage():
+    html_path = Path(__file__).parent.parent / "frontend" / "discipline.html"
     return FileResponse(html_path)
 
 
