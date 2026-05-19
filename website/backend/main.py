@@ -698,20 +698,21 @@ def create_entries_for_single_swimmer_for_swim_prediction(
         for age_delta in range(-5, 6, 1):
             indice += 1
             rows.append(row.copy())
-            dob_data = calculate_swimmer_dob_year_monthsin_monthcos_doysin_doycos_dowsin_dowcos(
-                swim_data.swim_datetime_local_iso,
-                cur_swimmer_dob - relativedelta(years=age_delta),
-            )
+            # Дату рождения не меняем - протироверечит методу сценарного прогнозирования
+            # dob_data = calculate_swimmer_dob_year_monthsin_monthcos_doysin_doycos_dowsin_dowcos(
+            #     swim_datetime_local_iso,
+            #     cur_swimmer_dob - relativedelta(years=age_delta),
+            # )
             rows[-1]["swimmer_age_at_swim_start"] = (
                 rows[0]["swimmer_age_at_swim_start"] + age_delta
             )
-            rows[-1]["swimmer_dob_year"] = dob_data[0]
-            rows[-1]["swimmer_dob_month_sin"] = dob_data[1]
-            rows[-1]["swimmer_dob_month_cos"] = dob_data[2]
-            rows[-1]["swimmer_dob_doy_sin"] = dob_data[3]
-            rows[-1]["swimmer_dob_doy_cos"] = dob_data[4]
-            rows[-1]["swimmer_dob_dow_sin"] = dob_data[5]
-            rows[-1]["swimmer_dob_dow_cos"] = dob_data[6]
+            # rows[-1]["swimmer_dob_year"] = dob_data[0]
+            # rows[-1]["swimmer_dob_month_sin"] = dob_data[1]
+            # rows[-1]["swimmer_dob_month_cos"] = dob_data[2]
+            # rows[-1]["swimmer_dob_doy_sin"] = dob_data[3]
+            # rows[-1]["swimmer_dob_doy_cos"] = dob_data[4]
+            # rows[-1]["swimmer_dob_dow_sin"] = dob_data[5]
+            # rows[-1]["swimmer_dob_dow_cos"] = dob_data[6]
             ages.append(rows[-1]["swimmer_age_at_swim_start"])
             if age_delta == 0:
                 cur_element_indices_in_predictions.append(indice)
@@ -1326,20 +1327,21 @@ def create_entries_for_single_swimmer_for_discipline_prediction(
         for age_delta in range(-5, 6, 1):
             indice += 1
             rows.append(row.copy())
-            dob_data = calculate_swimmer_dob_year_monthsin_monthcos_doysin_doycos_dowsin_dowcos(
-                swim_datetime_local_iso,
-                cur_swimmer_dob - relativedelta(years=age_delta),
-            )
+            # Дату рождения не меняем - протироверечит методу сценарного прогнозирования
+            # dob_data = calculate_swimmer_dob_year_monthsin_monthcos_doysin_doycos_dowsin_dowcos(
+            #     swim_datetime_local_iso,
+            #     cur_swimmer_dob - relativedelta(years=age_delta),
+            # )
             rows[-1]["swimmer_age_at_swim_start"] = (
                 rows[0]["swimmer_age_at_swim_start"] + age_delta
             )
-            rows[-1]["swimmer_dob_year"] = dob_data[0]
-            rows[-1]["swimmer_dob_month_sin"] = dob_data[1]
-            rows[-1]["swimmer_dob_month_cos"] = dob_data[2]
-            rows[-1]["swimmer_dob_doy_sin"] = dob_data[3]
-            rows[-1]["swimmer_dob_doy_cos"] = dob_data[4]
-            rows[-1]["swimmer_dob_dow_sin"] = dob_data[5]
-            rows[-1]["swimmer_dob_dow_cos"] = dob_data[6]
+            # rows[-1]["swimmer_dob_year"] = dob_data[0]
+            # rows[-1]["swimmer_dob_month_sin"] = dob_data[1]
+            # rows[-1]["swimmer_dob_month_cos"] = dob_data[2]
+            # rows[-1]["swimmer_dob_doy_sin"] = dob_data[3]
+            # rows[-1]["swimmer_dob_doy_cos"] = dob_data[4]
+            # rows[-1]["swimmer_dob_dow_sin"] = dob_data[5]
+            # rows[-1]["swimmer_dob_dow_cos"] = dob_data[6]
             ages.append(rows[-1]["swimmer_age_at_swim_start"])
             if age_delta == 0:
                 cur_element_indices_in_predictions.append(indice)
