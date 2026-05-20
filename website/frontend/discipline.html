@@ -199,7 +199,7 @@
                 </div>
                 <div class="col-12 col-md-6 col-xl-3">
                     <label for="selectSex" class="form-label">Пол:</label>
-                    <select class="form-select" id="selectSex" onchange="onSelectedForField(this)">
+                    <select class="form-select" id="selectSex" onchange="onSelectedForField(this)" autocomplete="off">
                         <option selected value="" disabled hidden>Выберите пол</option>
                         <option value="M">Мужской</option>
                         <option value="F">Женский</option>
@@ -1004,6 +1004,14 @@
                 return false;
             }
             let count = document.getElementById("inputPhaseSwimCount").value
+            //Проверка что число целое и включает только цифры
+            if (!/^[1-9][0-9]*$/.test(count) && !/^[0-9]$/.test(count) ) {
+                document.getElementById('inputPhaseSwimCount').classList.add('is-invalid');
+                return false;
+            }
+            
+            count = parseInt(count, 10);
+            
             let minVal = 0
             let maxVal = 0
             if (phase == "Heats") {
@@ -1028,7 +1036,7 @@
             return;
         }
         disableInputs();
-        count = document.getElementById("inputPhaseSwimCount").value;
+        count = parseInt(document.getElementById("inputPhaseSwimCount").value,10);
         if (phase == 'Heats') {
             disciplineInputData.heatsPhaseSwims = Array.from({ length: count }, () => ({}));
         }
