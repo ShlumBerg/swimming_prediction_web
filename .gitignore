@@ -4,6 +4,7 @@ parsing/venv/
 
 #Убрать кэш
 parsing/__pycache__/
+parsing/model/__pycache__/
 
 #Убрать датасеты
 parsing/output/raw_dataset.txt
@@ -26,8 +27,11 @@ website/frontend/.vscode/
 
 #Убрать venv
 website/backend/.venv/
+website/e2e_tests/venv/
 
 #Убрать кэш
 website/backend/.pytest_cache/
 website/backend/__pycache__/
+website/e2e_tests/__pycache__/
+website/e2e_tests/.pytest_cache/
 

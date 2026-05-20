@@ -676,8 +676,8 @@
             isValid = false;
         }
         else { //Дата не попадает в нужные временные рамки
-            minAllowedDateTime = new Date(Date.UTC(2026, 0, 1, 0, 0, 0, 0));
-            maxAllowedDateTime = new Date(Date.UTC(2049, 11, 31, 23, 59, 59, 0));
+            minAllowedDateTime = new Date(2026, 0, 1, 0, 0, 0, 0);
+            maxAllowedDateTime = new Date(2049, 11, 31, 23, 59, 59, 0);
             selectedDateTime = new Date(inputData.swim_datetime_local_iso);
             if (isNaN(selectedDateTime) || (selectedDateTime < minAllowedDateTime) || (selectedDateTime > maxAllowedDateTime)) {
 
