@@ -6,8 +6,10 @@ DISCIPLINE_PAGE_PATH="/discipline"
 
 #Настроить размер viewport для playwright (через встроеную в него функцию)
 @pytest.fixture(scope="function")
-def browser_context_args(viewport):
-    return {"viewport": viewport}
+def browser_context_args(browser_context_args,viewport):
+    return {
+        **browser_context_args,
+        "viewport": viewport}
 
 
 @pytest.mark.parametrize("viewport",[
@@ -257,8 +259,10 @@ class TestMainPage:
 
 #Настроить размер viewport для playwright (через встроеную в него функцию)
 @pytest.fixture(scope="function")
-def browser_context_args(viewport):
-    return {"viewport": viewport}
+def browser_context_args(browser_context_args,viewport):
+    return {
+        **browser_context_args,
+        "viewport": viewport}
 @pytest.mark.parametrize("viewport",[
     pytest.param({"width":393,"height":852},id="xs"), #extra small (iphone 14 iOS 18.6 vertical)
     pytest.param({"width":712,"height":1138},id="sm"), #small (galaxy tab s9 android 14 vetrical)
@@ -4760,8 +4764,10 @@ class TestSwimPredPage:
         
 #Настроить размер viewport для playwright (через встроеную в него функцию)
 @pytest.fixture(scope="function")
-def browser_context_args(viewport):
-    return {"viewport": viewport}
+def browser_context_args(browser_context_args,viewport):
+    return {
+        **browser_context_args,
+        "viewport": viewport}
 @pytest.mark.parametrize("viewport",[
     pytest.param({"width":393,"height":852},id="xs"), #extra small (iphone 14 iOS 18.6 vertical)
     pytest.param({"width":712,"height":1138},id="sm"), #small (galaxy tab s9 android 14 vetrical)
@@ -10467,6 +10473,8 @@ class TestDisciplinePredPage:
         #Нажать на кнопку прогноза
         page.locator("button#buttonPredict").click()
         
+        page.wait_for_timeout(1000) #Подождать анимацию
+        
         try:
             header_title=page.locator("nav").get_by_text('Система прогноза результатов по плаванию').first
         except:
@@ -10845,6 +10853,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
+        page.context.set_default_timeout(5000)
         page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Комплексный")
@@ -10852,6 +10861,8 @@ class TestDisciplinePredPage:
         page.select_option("select#selectSex",label="Мужской")
         page.select_option("select#selectPoolLength",label="50м")
         page.select_option("select#selectHostCountry",label="Мексика")
+        page.check("input#checkHasSemifinals")
+        page.check("input#checkHasHeats")
         #Нажать на кнопку "Применить" в 1 карточке
         page.locator("button#buttonApplyDisciplineData").first.click()
         #Выбрать число заплывов (3) в отборочных
@@ -11056,6 +11067,7 @@ class TestDisciplinePredPage:
         
         #Нажать на кнопку прогноза
         page.locator("button#buttonPredict").click()
+        page.wait_for_timeout(2000) #Подождать результатов
         
         try:
             header_title=page.locator("nav").get_by_text('Система прогноза результатов по плаванию').first
@@ -11207,10 +11219,11 @@ class TestDisciplinePredPage:
             graphs_modal=None
         
         #Раскрыть аккордеон с результатами
-        results_accordeon_buttons=page.locator('div#swimInputAccordeon .accordion-button')
-        for i in results_accordeon_buttons.all():
-            i.click()
-        page.wait_for_timeout(400) #Подождать раскрытия аккордеона
+        results_accordeon_buttons_count=page.locator('div#resultsAccordion .accordion-button').count()
+        for i in range(results_accordeon_buttons_count):
+            page.locator('div#resultsAccordion .accordion-button').nth(i).click()
+            page.wait_for_timeout(600) #Подождать раскрытия аккордеона
+        
         try:
             visible_result_swims_count=page.locator("div#resultsAccordion > div").filter(visible=True).count() #Число выходных результатов заплывов
         except:
@@ -11347,8 +11360,8 @@ class TestDisciplinePredPage:
         
         
         
-        #Проверка что существуют тосты с ошибками сети
-        assert toasts_count>0
+        #Проверка что не существует тостов с ошибками сети
+        assert toasts_count==0
         
         #Проверка что результатов заплывов 6
         assert visible_result_swims_count==6
@@ -11404,7 +11417,7 @@ class TestDisciplinePredPage:
         from_phase_to_str={"Semifinals":"полуфинала","Finals":"финала","Heats":"отборочных"}
         first_phase="Heats"
         for swim in swims_array:
-            btn_accordion=page.get_by_text(f"Заплыв {swim.swim_number_in_phase} фазы {from_phase_to_str[swim.phase]}")
+            btn_accordion=page.locator('#resultsAccordion').get_by_text(f"Заплыв {swim.swim_number_in_phase} фазы {from_phase_to_str[swim.phase]}")
             assert btn_accordion is not None and btn_accordion.is_visible()
             assert btn_accordion.inner_text()==f"Заплыв {swim.swim_number_in_phase} фазы {from_phase_to_str[swim.phase]}"
             expect(btn_accordion).to_have_js_property("tagName","BUTTON")
@@ -11423,11 +11436,12 @@ class TestDisciplinePredPage:
         cur_phase="Heats"
         cur_swims_arr=swims_array[:3]
         class swimmerResult:
-            def __init__(self,name,phase_place,swim_place,result_time):
+            def __init__(self,name,phase_place,swim_place,result_time,lane):
                 self.name:str=name
                 self.phase_place:int=phase_place
                 self.swim_place:int=swim_place
                 self.result_time:float=result_time
+                self.lane=lane
         
         while cur_phase!="":
             
@@ -11439,7 +11453,7 @@ class TestDisciplinePredPage:
                 assert cur_swim_accordeon_button.inner_text()==f"Заплыв {swim.swim_number_in_phase} фазы {from_phase_to_str[swim.phase]}"
                 swimmer_rows=page.locator(f'#resultsAccordionEntry{swim.phase}{swim.swim_number_in_phase-1} > div > div.row')
                 swimmers_results_in_swim=[]
-                for swimmer_row in swimmer_rows:
+                for swimmer_row in swimmer_rows.all():
                     assert swimmer_row.locator('> div').first.locator('> div').first.is_visible() and swimmer_row.locator('> div').first.locator('> div').first.inner_text()=="Дорожка:"
                     assert swimmer_row.locator('> div').nth(1).locator('> div').first.is_visible() and swimmer_row.locator('> div').nth(1).locator('> div').first.inner_text()=="Пловец:"
                     assert swimmer_row.locator('> div').nth(2).locator('> div').first.is_visible() and swimmer_row.locator('> div').nth(2).locator('> div').first.inner_text()=="Время:"
@@ -11459,7 +11473,7 @@ class TestDisciplinePredPage:
                         time = float(time_str)
                     swim_place=int(swimmer_row.locator('> div').nth(3).locator('> div').nth(1).inner_text())
                     phase_place=int(swimmer_row.locator('> div').nth(4).locator('> div').nth(1).inner_text())
-                    swimmers_results_in_swim.append(swimmerResult(name,phase_place,swim_place,time))
+                    swimmers_results_in_swim.append(swimmerResult(name,phase_place,swim_place,time,lane))
                     show_graphs_btn=swimmer_row.locator('> div').nth(5).locator('> button').first
                     #Проверить имя на соответствие
                     assert name==cur_swims_arr[ind].swimmers_arr[lane]
@@ -11498,14 +11512,14 @@ class TestDisciplinePredPage:
                     assert not graphs_modal_close_btn.is_visible() #Проверка что кнопка закрытия модалки не видна
                 swimmers_results_in_swim=sorted(swimmers_results_in_swim, key=lambda x:x.phase_place)
                 #Проверить что места пловцов соответствуют времени и последовательны и начинаются с 1, проверить что место в заплыве уникально
-                assert swimmers_results_in_swim[0].phase_place==1
+                assert swimmers_results_in_swim[0].swim_place==1
                 for i in range(len(swimmers_results_in_swim)-1):
                     assert swimmers_results_in_swim[i+1].swim_place==swimmers_results_in_swim[i].swim_place+1
                     assert swimmers_results_in_swim[i+1].result_time>=swimmers_results_in_swim[i].result_time
                 #Проверить что дорожки уникальны в рамках заплыва
                 lanes_set=set()
-                for i in range(len(swimmers_results_in_swim)-1):
-                    lanes_set.add(swimmers_results_in_swim[i+1].lane)
+                for i in range(len(swimmers_results_in_swim)):
+                    lanes_set.add(swimmers_results_in_swim[i].lane)
                 assert len(lanes_set)==len(swimmers_results_in_swim)
                 
                 swimmers_results_in_cur_phase+=swimmers_results_in_swim
@@ -11530,21 +11544,25 @@ class TestDisciplinePredPage:
                 assert swimmers_results_in_cur_phase[ind+1].lane<=9
             from_place_in_phase_to_lane_ind=(4, 5, 3, 6, 2, 7, 1, 8, 0, 9)
             if cur_phase=="Heats":
-                cur_phase=="Semifinals"
+                cur_phase="Semifinals"
                 new_swims_array=[swim for swim in swims_array if swim.phase == "Semifinals"]
                 for ind,swimmer in enumerate(swimmers_results_in_cur_phase):
+                    if ind>15: #Уже набрали 16 пловцов
+                        break
                     seeding_in_swim=ind//2
                     new_lane=from_place_in_phase_to_lane_ind[seeding_in_swim]
-                    swim_ind=ind%2
+                    swim_ind=(ind+1)%2
                     new_swims_array[swim_ind].swimmers_arr[new_lane]=swimmer.name
             elif cur_phase=="Semifinals":
-                cur_phase=="Finals"
+                cur_phase="Finals"
                 new_swims_array=[swim for swim in swims_array if swim.phase == "Finals"]
                 for ind,swimmer in enumerate(swimmers_results_in_cur_phase):
+                    if ind>7: #Уже набрали 8 пловцов
+                        break
                     seeding_in_swim=ind
                     new_lane=from_place_in_phase_to_lane_ind[seeding_in_swim]
                     new_swims_array[0].swimmers_arr[new_lane]=swimmer.name
-            elif cur_phase=="Heats":
-                cur_phase==""
+            elif cur_phase=="Finals":
+                cur_phase=""
                 new_swims_array=[]
             cur_swims_arr=new_swims_array
