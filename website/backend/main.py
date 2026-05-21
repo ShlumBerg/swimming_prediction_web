@@ -19,7 +19,7 @@ import sqlite3
 from fastapi.responses import FileResponse
 from pathlib import Path
 
-LANES_SEEDING_INSIDE_SWIM = (4, 5, 3, 6, 2, 7, 8, 1, 9, 0)
+LANES_SEEDING_INSIDE_SWIM = (4, 5, 3, 6, 2, 7, 1, 8, 0, 9)
 
 MIN_SWIMMER_DOB_DATE = date(1970, 1, 1)
 MAX_SWIMMER_DOB_DATE = date(2050, 1, 1)
