@@ -25,7 +25,7 @@ class TestMainPage:
     def test_all_elements_present_and_have_required_text_no_actions(self,base_url,page:Page,viewport):
         url=base_url if base_url else BASE_URL_DEFAULT
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         try:
             header_title=page.locator("nav").get_by_text('Система прогноза результатов по плаванию').first
         except:
@@ -107,7 +107,7 @@ class TestMainPage:
             return
         url=base_url if base_url else BASE_URL_DEFAULT
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Развернуть сворачивающееся меню в шапке
         page.locator("button.navbar-toggler").first.click()
         page.wait_for_timeout(600)  # Ждем анимацию
@@ -188,7 +188,7 @@ class TestMainPage:
             return
         url=base_url if base_url else BASE_URL_DEFAULT
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Развернуть и свернуть сворачивающееся меню в шапке
         page.locator("button.navbar-toggler").first.click()
         page.wait_for_timeout(600)  # Ждем анимацию
@@ -277,7 +277,7 @@ class TestSwimPredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         try:
             header_title=page.locator("nav").get_by_text('Система прогноза результатов по плаванию').first
         except:
@@ -674,7 +674,7 @@ class TestSwimPredPage:
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.context.set_offline(True) #Отключить интернет как только страница загрузилась
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         try:
             header_title=page.locator("nav").get_by_text('Система прогноза результатов по плаванию').first
         except:
@@ -1074,7 +1074,7 @@ class TestSwimPredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Развернуть сворачивающееся меню в шапке
         page.locator("button.navbar-toggler").first.click()
         page.wait_for_timeout(600)  # Ждем анимацию
@@ -1471,7 +1471,7 @@ class TestSwimPredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Развернуть и свернуть сворачивающееся меню в шапке
         page.locator("button.navbar-toggler").first.click()
         page.wait_for_timeout(600)  # Ждем анимацию
@@ -1860,7 +1860,7 @@ class TestSwimPredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         page.get_by_text("Предсказать",exact=True).first.click() #Нажать по кнопке предсказания
         page.wait_for_timeout(600)  # Ждем анимацию
         
@@ -2281,7 +2281,7 @@ class TestSwimPredPage:
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.set_default_timeout(3000)
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Выбрать необходимые данные
         page.select_option("select#selectStyle",label="Баттерфляй")
         page.select_option("select#selectDistance",label="100м")
@@ -2720,7 +2720,7 @@ class TestSwimPredPage:
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.set_default_timeout(3000)
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Выбрать необходимые данные
         page.select_option("select#selectStyle",label="Комплексный")
         page.select_option("select#selectDistance",label="200м")
@@ -3168,7 +3168,7 @@ class TestSwimPredPage:
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.set_default_timeout(3000)
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Выбрать необходимые данные
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -3692,7 +3692,7 @@ class TestSwimPredPage:
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.set_default_timeout(3000)
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Выбрать необходимые данные
         page.select_option("select#selectStyle",label="На спине")
         page.select_option("select#selectDistance",label="1500м")
@@ -4282,7 +4282,7 @@ class TestSwimPredPage:
         url=url+SWIM_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.set_default_timeout(3000)
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Выбрать необходимые данные
         page.select_option("select#selectStyle",label="На спине")
         page.select_option("select#selectDistance",label="1500м")
@@ -4782,7 +4782,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         try:
             header_title=page.locator("nav").get_by_text('Система прогноза результатов по плаванию').first
         except:
@@ -5065,7 +5065,7 @@ class TestDisciplinePredPage:
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.context.set_offline(True) #Отключить интернет как только страница загрузилась
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         try:
             header_title=page.locator("nav").get_by_text('Система прогноза результатов по плаванию').first
         except:
@@ -5349,7 +5349,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Развернуть сворачивающееся меню в шапке
         page.locator("button.navbar-toggler").first.click()
         page.wait_for_timeout(600)  # Ждем анимацию
@@ -5634,7 +5634,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Развернуть и свернуть сворачивающееся меню в шапке
         page.locator("button.navbar-toggler").first.click()
         page.wait_for_timeout(600)  # Ждем анимацию
@@ -5909,7 +5909,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Нажать на кнопку "Применить"
         page.locator("button#buttonApplyDisciplineData").first.click()
         try:
@@ -6205,7 +6205,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -6521,7 +6521,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -6840,7 +6840,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -7160,7 +7160,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -7483,7 +7483,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -7809,7 +7809,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -8137,7 +8137,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -8457,7 +8457,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -8780,7 +8780,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -9100,7 +9100,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -9423,7 +9423,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -9743,7 +9743,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Вольный стиль")
         page.select_option("select#selectDistance",label="50м")
@@ -10069,7 +10069,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Брасс")
         page.select_option("select#selectDistance",label="100м")
@@ -10429,7 +10429,7 @@ class TestDisciplinePredPage:
         url=base_url if base_url else BASE_URL_DEFAULT
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="На спине")
         page.select_option("select#selectDistance",label="200м")
@@ -10854,7 +10854,7 @@ class TestDisciplinePredPage:
         url=url+DISCIPLINE_PAGE_PATH
         page.goto(url) #Перейти по ссылке
         page.context.set_default_timeout(5000)
-        page.wait_for_load_state("networkidle") #Дождаться полной загрузки страницы
+        page.wait_for_timeout(600) #Дождаться полной загрузки страницы
         #Ввод сведений о дисциплине
         page.select_option("select#selectStyle",label="Комплексный")
         page.select_option("select#selectDistance",label="400м")

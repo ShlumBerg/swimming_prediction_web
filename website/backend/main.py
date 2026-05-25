@@ -25,7 +25,7 @@ MIN_SWIMMER_DOB_DATE = date(1970, 1, 1)
 MAX_SWIMMER_DOB_DATE = date(2050, 1, 1)
 MIN_SWIMMER_HEIGHT = 70
 MAX_SWIMMER_HEIGHT = 300
-MIN_SWIM_DATETIME = datetime(2025, 1, 1)
+MIN_SWIM_DATETIME = datetime(2026, 1, 1)
 MAX_SWIM_DATETIME = datetime(2050, 1, 1, 0, 0, 0, 0)
 MIN_TIME_BETWEEN_PHASES = timedelta(minutes=15)  # Минимум 15 минут между фазами
 DF_COLUMNS_LIST = [

@@ -23,7 +23,7 @@ class TestSwimPrediction:
                 "swim_style": "Freestyle",
                 "swim_pool_length": 25,
                 "swim_phase": "Finals",
-                "swim_datetime_local_iso": "2025-10-25T12:14:40",
+                "swim_datetime_local_iso": "2026-10-25T12:14:40",
                 "host_country_code": "CAN",
                 "host_region": "Americas",
                 "swimmers_array": [
@@ -173,7 +173,7 @@ class TestSwimPrediction:
                 "swim_style": "Freestyle",
                 "swim_pool_length": 25,
                 "swim_phase": "Finals",
-                "swim_datetime_local_iso": "2025-10-25T12:14:40",
+                "swim_datetime_local_iso": "2026-10-25T12:14:40",
                 "host_country_code": "CAN",
                 "host_region": "Americas",
                 "swimmers_array": [
@@ -324,7 +324,7 @@ class TestSwimPrediction:
                 "swim_style": "Backstroke",
                 "swim_pool_length": 50,
                 "swim_phase": "Semifinals",
-                "swim_datetime_local_iso": "2025-01-01T00:00:00",
+                "swim_datetime_local_iso": "2026-01-01T00:00:00",
                 "host_country_code": "ISR",
                 "host_region": "Africa",
                 "swimmers_array": [
