@@ -242,7 +242,7 @@
 </body>
 <script>
     MILLISECONDS_BETWEEN_BUTTON_PRESSESS_FOR_PREDICTIONS=1500;
-
+    GRAPHS_LABELS_SIZE=16
     //Показать ошибку в виде всплывающего сообщения
     function showErrorToast(message) {
         const container = document.querySelector('.toast-container');
@@ -878,7 +878,8 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Зависимость прогноза от роста пловца'
+                            text: 'Зависимость прогноза от роста пловца',
+                            font: { size: GRAPHS_LABELS_SIZE }
                         },
                         legend: {
                             display: false
@@ -892,7 +893,9 @@
                                 label: function (context) {
                                     return `Время: ${context.raw.y.toFixed(4)} сек.`;
                                 }
-                            }
+                            },
+                            titleFont: {size:GRAPHS_LABELS_SIZE},
+                            bodyFont: {size:GRAPHS_LABELS_SIZE}
                         }
                     },
                     scales: {
@@ -900,19 +903,25 @@
                             type: 'linear',
                             title: {
                                 display: true,
-                                text: 'Рост в см'
+                                text: 'Рост в см',
+                                font: { size: GRAPHS_LABELS_SIZE }
+                            },
+                            ticks:{
+                                font: { size: GRAPHS_LABELS_SIZE }
                             }
                         },
                         y: {
                             suggestedMin: minY - padding,
                             suggestedMax: maxY + padding,
                             ticks: {
-                                stepSize: Math.max(0.1, range / 10)
+                                stepSize: Math.max(0.1, range / 10),
+                                font: { size: GRAPHS_LABELS_SIZE }
                             },
                             type: 'linear',
                             title: {
                                 display: true,
-                                text: 'Время (сек.)'
+                                text: 'Время (сек.)',
+                                font: { size: GRAPHS_LABELS_SIZE }
                             }
                         }
                     }
@@ -942,7 +951,8 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Зависимость прогноза от возраста пловца'
+                            text: 'Зависимость прогноза от возраста пловца',
+                            font: { size: GRAPHS_LABELS_SIZE }
                         },
                         legend: {
                             display: false
@@ -956,7 +966,9 @@
                                 label: function (context) {
                                     return `Время: ${context.raw.y.toFixed(4)} сек.`;
                                 }
-                            }
+                            },
+                            titleFont: {size:GRAPHS_LABELS_SIZE},
+                            bodyFont: {size:GRAPHS_LABELS_SIZE}
                         }
                     },
                     scales: {
@@ -964,19 +976,25 @@
                             type: 'linear',
                             title: {
                                 display: true,
-                                text: 'Возраст'
+                                text: 'Возраст',
+                                font: { size: GRAPHS_LABELS_SIZE }
+                            },
+                            ticks:{
+                                font: { size: GRAPHS_LABELS_SIZE }
                             }
                         },
                         y: {
                             suggestedMin: minY - padding,
                             suggestedMax: maxY + padding,
                             ticks: {
-                                stepSize: Math.max(0.1, range / 10)
+                                stepSize: Math.max(0.1, range / 10),
+                                font: { size: GRAPHS_LABELS_SIZE }
                             },
                             type: 'linear',
                             title: {
                                 display: true,
-                                text: 'Время (сек.)'
+                                text: 'Время (сек.)',
+                                font: { size: GRAPHS_LABELS_SIZE }
                             }
                         }
                     }
@@ -1004,7 +1022,8 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Зависимость прогноза от дорожки пловца'
+                        text: 'Зависимость прогноза от дорожки пловца',
+                        font: { size: GRAPHS_LABELS_SIZE }
                     },
                     legend: {
                         display: false
@@ -1018,7 +1037,9 @@
                             label: function (context) {
                                 return `Время: ${context.raw.y.toFixed(4)} сек.`;
                             }
-                        }
+                        },
+                        titleFont: {size:GRAPHS_LABELS_SIZE},
+                        bodyFont: {size:GRAPHS_LABELS_SIZE}
                     }
                 },
                 scales: {
@@ -1026,19 +1047,25 @@
                         type: 'linear',
                         title: {
                             display: true,
-                            text: 'Дорожка'
+                            text: 'Дорожка',
+                            font: { size: GRAPHS_LABELS_SIZE }
+                        },
+                        ticks:{
+                                font: { size: GRAPHS_LABELS_SIZE }
                         }
                     },
                     y: {
                         suggestedMin: minY - padding,
                         suggestedMax: maxY + padding,
                         ticks: {
-                            stepSize: Math.max(0.1, range / 10)
+                            stepSize: Math.max(0.1, range / 10),
+                            font: { size: GRAPHS_LABELS_SIZE }
                         },
                         type: 'linear',
                         title: {
                             display: true,
-                            text: 'Время (сек.)'
+                            text: 'Время (сек.)',
+                            font: { size: GRAPHS_LABELS_SIZE }
                         }
                     }
                 }
