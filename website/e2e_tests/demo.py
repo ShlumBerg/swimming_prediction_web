@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import sync_playwright,Browser,Page,expect
 from main import BASE_URL_DEFAULT
-ZOOM_SCALE=1.75
+ZOOM_SCALE=1.6
 #Настроить размер viewport для playwright (через встроеную в него функцию)
 @pytest.fixture(scope="function")
 def browser_context_args(browser_context_args,viewport):
@@ -28,7 +28,7 @@ class TestForDemoVideo:
         page.evaluate(f"document.documentElement.style.zoom = '{int(ZOOM_SCALE*100)}%'")
         page.wait_for_timeout(50)
         page.wait_for_timeout(1000) #Дождаться полной загрузки страницы
-        page.wait_for_timeout(6000) #Подождать перед переходом на следующую страницу
+        page.wait_for_timeout(5000) #Подождать перед переходом на следующую страницу
         
         
         #Перейти на страницу прогноза заплыва
@@ -100,6 +100,8 @@ class TestForDemoVideo:
         page.locator("#selectHostCountry + .ts-wrapper .ts-dropdown .option", has_text="Австралия").click()
         page.keyboard.press("Escape")  #Закрыть томселект
         page.wait_for_timeout(300) #Подождать после ввода поля
+        page.evaluate("window.scrollBy({ top: 900, behavior: 'smooth' })") #Прокрутить вниз страницу на 900px
+        page.wait_for_timeout(500)  #Ждем анимацию
         page.locator("#selectSwimmer4 + .ts-wrapper input").focus()
         page.wait_for_timeout(1000) #Ожидание фильтра
         page.locator("#selectSwimmer4 + .ts-wrapper .ts-dropdown .option", has_text="LIENDO Josh").click()
@@ -135,12 +137,8 @@ class TestForDemoVideo:
         """)#Прокрутить вниз страницу на 600px
         page.wait_for_timeout(2000)
         page.evaluate("""
-            document.querySelector('.modal.show').scrollBy({ top: 600, behavior: 'smooth' })
-        """)#Прокрутить вниз страницу на 600px
-        page.wait_for_timeout(2000)
-        page.evaluate("""
-            document.querySelector('.modal.show').scrollBy({ top: -1200, behavior: 'smooth' })
-        """) #Прокрутить вверх страницу на 1200px
+            document.querySelector('.modal.show').scrollBy({ top: -600, behavior: 'smooth' })
+        """)#Прокрутить вверх страницу на 600px
         page.wait_for_timeout(1300)
         page.locator("div.modal-header button.btn-close").click()
         page.wait_for_timeout(900)
@@ -152,7 +150,8 @@ class TestForDemoVideo:
         page.wait_for_timeout(2000)
         page.evaluate("""
             document.querySelector('.modal.show').scrollBy({ top: 600, behavior: 'smooth' })
-        """)#Прокрутить вниз страницу на 600px
+        """)
+        #Прокрутить вниз страницу на 600px
         page.wait_for_timeout(2000)
         page.evaluate("""
             document.querySelector('.modal.show').scrollBy({ top: -1200, behavior: 'smooth' })
@@ -160,7 +159,7 @@ class TestForDemoVideo:
         page.wait_for_timeout(1300)
         page.locator("div.modal-header button.btn-close").click()
         page.wait_for_timeout(900)
-        page.evaluate("window.scrollBy({ top: -700, behavior: 'smooth' })") #Прокрутить вверх страницу на 700px
+        page.evaluate("window.scrollBy({ top: -1000, behavior: 'smooth' })") #Прокрутить вверх страницу на 1000px
         page.wait_for_timeout(900)
         
         #Перейти на страницу прогноза дисциплины
@@ -363,12 +362,8 @@ class TestForDemoVideo:
         """)#Прокрутить вниз страницу на 600px
         page.wait_for_timeout(2000)
         page.evaluate("""
-            document.querySelector('.modal.show').scrollBy({ top: 600, behavior: 'smooth' })
-        """)#Прокрутить вниз страницу на 600px
-        page.wait_for_timeout(2000)
-        page.evaluate("""
-            document.querySelector('.modal.show').scrollBy({ top: -1200, behavior: 'smooth' })
-        """) #Прокрутить вверх страницу на 1200px
+            document.querySelector('.modal.show').scrollBy({ top: -600, behavior: 'smooth' })
+        """)#Прокрутить вверх страницу на 600px
         page.wait_for_timeout(1300)
         page.locator("div.modal-header button.btn-close").click()
         page.wait_for_timeout(900)
