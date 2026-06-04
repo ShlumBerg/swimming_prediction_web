@@ -21,8 +21,9 @@ pip install -r requirements.txt
 Блокнот предобрабатывает данный датасет, и создает следующие файлы:  
 - dataset_with_embeddings.csv - предобработанный датасет в формате csv  
 # Описание блокнота train_models.ipynb  
-Данный блокнот принимает на вход обработанный датасет dataset_with_embeddings.csv, полученный в результате блокнота process_dataset_with_embedding_creation.ipynb.  
+Данный блокнот принимает на вход обработанный датасет dataset_with_embeddings.csv, полученный в результате блокнота process_dataset_with_embedding_creation.ipynb, а также необработанный датасет raw_dataset.txt, полученный в результате работы программы для парсинга (находится в этом же репозитории, в папке parsing).  
 Датасет dataset_with_embeddings.csv, созданный в апреле 2026 года, можно найти по [ссылке](https://drive.google.com/file/d/1s8CIMW7YuQPIKxzzPo5o6fxxqgUHFMuX/view?usp=sharing)  
+Датасет raw_dataset.txt, созданный в апреле 2026 года, можно найти по [ссылке](https://drive.google.com/file/d/14xv5QUKM28GDjCJjGnYjWrNdyqmabNSU/view?usp=sharing)  
 Блокнот сравнивает несколько методов МО:  
 - ElasticNet (из библиотеки scikit-learn)  
 - RandomForestRegressor (из библиотеки scikit-learn)  
